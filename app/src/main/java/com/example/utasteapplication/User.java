@@ -1,7 +1,10 @@
-package com.example.utasteapplication; /**
-* Author: Sara Rigotti
-*
-**/
+package com.example.utasteapplication;
+/**
+ * Author: Othmane El Moutaouakkil
+ *
+ **/
+
+import android.os.Build;
 
 import java.time.LocalDateTime;
 
@@ -36,12 +39,20 @@ public abstract class User {
         updateModifiedAt();
     }
 
+    // Getter method for email
+    public String getEmail() {
+        return email;
+    }
+
     protected void updateModifiedAt() {
         this.modifiedAt = getCurrentTimestamp();
     }
 
     private String getCurrentTimestamp() {
-        return LocalDateTime.now().toString();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return LocalDateTime.now().toString();
+        }
+        return "minimum API version required for this method is API 26, I think... --Othmane";
     }
 
     public abstract String getRole();

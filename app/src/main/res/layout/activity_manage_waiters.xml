@@ -3,46 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:gravity="center">
+    android:padding="16dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="uTaste Login"
-        android:textSize="32sp"
+        android:text="Manage Waiters"
+        android:textSize="24sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginBottom="24dp"/>
 
     <EditText
-        android:id="@+id/email_input"
+        android:id="@+id/waiter_email_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Email"
+        android:hint="Waiter Email"
         android:inputType="textEmailAddress"
         android:layout_marginBottom="16dp"/>
 
     <EditText
-        android:id="@+id/password_input"
+        android:id="@+id/waiter_password_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="Waiter Password"
         android:inputType="textPassword"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="16dp"/>
 
     <Button
-        android:id="@+id/login_button"
+        android:id="@+id/add_waiter_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"/>
+        android:text="Add Waiter"
+        android:layout_marginBottom="16dp"/>
 
-    <TextView
+    <Button
+        android:id="@+id/back_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Default Users:\nadmin@utaste.com / admin123\nchef@utaste.com / chef123\nwaiter@utaste.com / waiter123"
-        android:textSize="12sp"
-        android:gravity="center"
-        android:layout_marginTop="24dp"/>
+        android:text="Back"/>
 
 </LinearLayout>

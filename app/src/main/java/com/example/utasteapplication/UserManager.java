@@ -1,6 +1,8 @@
-package com.example.utasteapplication;/*
-* Author: Sara Rigotti
-*/ 
+package com.example.utasteapplication;
+
+/*
+ * Author: Sara Rigotti
+ */
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +15,12 @@ public class UserManager {
     }
 
     public void removeUser(String email) {
-        users.removeIf(u -> u.email.equals(email));
+        users.removeIf(u -> u.getEmail().equals(email));
     }
 
     public User findUser(String email) {
         for (User u : users) {
-            if (u.email.equals(email)) {
+            if (u.getEmail().equals(email)) {
                 return u;
             }
         }
