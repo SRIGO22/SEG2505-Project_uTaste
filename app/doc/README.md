@@ -8,7 +8,7 @@ Marven Monalliance # 300401373
 
 
 ## Description
-Le projet « uTaste » consiste à concevoir et développer une application Android en Java, destinée à un restaurant gastronomique. Elle permet à différents utilisateurs (administrateur, chef cuisinier, serveur) de gérer des recettes, consulter des informations nutritionnelles, enregistrer des ventes et noter les plats.
+Le projet «uTaste» consiste à concevoir et développer une application Android en Java, destinée à un restaurant gastronomique. Elle permet à différents utilisateurs (administrateur, chef cuisinier, serveur) de gérer des recettes, consulter des informations nutritionnelles, enregistrer des ventes et noter les plats.
 L’application doit :
 - intégrer des fonctionnalités spécifiques à chaque rôle utilisateur ;
 - respecter une architecture logicielle modélisée en UML ;
