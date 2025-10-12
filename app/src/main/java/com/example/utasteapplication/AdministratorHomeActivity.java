@@ -40,7 +40,7 @@ public class AdministratorHomeActivity extends AppCompatActivity {
         logoutButton = findViewById(R.id.logout_button);
 
         // Set welcome message
-        welcomeText.setText(getString(R.string.welcome_message, "Administrator"));
+        welcomeText.setText("Welcome, Administrator!");
 
         // Set button listeners
         manageWaitersButton.setOnClickListener(new View.OnClickListener() {
