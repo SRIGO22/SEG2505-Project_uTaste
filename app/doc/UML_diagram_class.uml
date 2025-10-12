@@ -1,0 +1,109 @@
+@startuml
+' Package declaration
+package "com.example.utasteapplication" {
+
+    ' Interface
+    interface Role {
+        +getRoleName() : String
+    }
+
+    ' Abstract User class
+    abstract class User {
+        -firstName: String
+        -lastName: String
+        -email: String
+        -password: String
+        -createdAt: String
+        -modifiedAt: String
+        +User(email: String, password: String)
+        +authenticate(inputPwd: String) : boolean
+        +changePassword(newPwd: String)
+        +updateProfile(firstName: String, lastName: String, email: String)
+        +getEmail() : String
+        +getRole() : String
+    }
+
+    ' Concrete user roles
+    class Administrator {
+        +Administrator(email: String, password: String)
+        +getRole() : String
+        +getRoleName() : String
+    }
+
+    class Chef {
+        +Chef(email: String, password: String)
+        +getRole() : String
+        +getRoleName() : String
+    }
+
+    class Waiter {
+        +Waiter(email: String, password: String)
+        +getRole() : String
+        +getRoleName() : String
+    }
+
+    ' Singleton manager classes
+    class UserManager {
+        -users: List<User>
+        -instance: UserManager
+        +getInstance() : UserManager
+        +addUser(u: User)
+        +removeUser(email: String)
+        +findUser(email: String) : User
+        +getAllUsers() : List<User>
+        +getAllWaiters() : List<Waiter>
+    }
+
+    class Session {
+        -user: User
+        -loginTime: String
+        +Session(user: User)
+        +getUser() : User
+        +getLoginTime() : String
+        +logout()
+    }
+
+    class SessionManager {
+        -instance: SessionManager
+        -currentSession: Session
+        +getInstance() : SessionManager
+        +createSession(user: User)
+        +getCurrentSession() : Session
+        +getCurrentUser() : User
+        +isLoggedIn() : boolean
+        +logout()
+    }
+
+    ' Activities
+    class LoginActivity
+    class AdministratorHomeActivity
+    class ChefHomeActivity
+    class WaiterHomeActivity
+    class ChangePasswordActivity
+    class ManageWaitersActivity
+
+}
+
+' Relationships
+User <|-- Administrator
+User <|-- Chef
+User <|-- Waiter
+Administrator ..|> Role
+Chef ..|> Role
+Waiter ..|> Role
+
+SessionManager "1" -- "0..1" Session : manages >
+Session "1" --> "1" User : contains >
+
+UserManager "1" --> "0..*" User : manages >
+
+LoginActivity --> UserManager
+LoginActivity --> SessionManager
+AdministratorHomeActivity --> SessionManager
+ChefHomeActivity --> SessionManager
+WaiterHomeActivity --> SessionManager
+ChangePasswordActivity --> UserManager
+ChangePasswordActivity --> User
+ManageWaitersActivity --> UserManager
+
+@enduml
