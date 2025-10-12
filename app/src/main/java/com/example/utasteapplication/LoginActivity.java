@@ -3,6 +3,7 @@ package com.example.utasteapplication;
 /**
  * Author: Othmane El Moutaouakkil
  * Login Activity - Entry point for the uTaste application
+ * Updated to use Singleton pattern
  */
 
 import android.content.Intent;
@@ -19,16 +20,16 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordInput;
     private Button loginButton;
     private UserManager userManager;
-    private Session currentSession;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize UserManager and create default users
-        userManager = new UserManager();
-        initializeDefaultUsers();
+        // Get singleton instances
+        userManager = UserManager.getInstance();
+        sessionManager = SessionManager.getInstance();
 
         // Initialize UI components
         emailInput = findViewById(R.id.email_input);
@@ -42,23 +43,6 @@ public class LoginActivity extends AppCompatActivity {
                 handleLogin();
             }
         });
-    }
-
-    private void initializeDefaultUsers() {
-        // Create default administrator
-        Administrator admin = new Administrator("admin@utaste.com", "admin123");
-        admin.updateProfile("Admin", "User", "admin@utaste.com");
-        userManager.addUser(admin);
-
-        // Create default chef
-        Chef chef = new Chef("chef@utaste.com", "chef123");
-        chef.updateProfile("Chef", "User", "chef@utaste.com");
-        userManager.addUser(chef);
-
-        // Create default waiter
-        Waiter waiter = new Waiter("waiter@utaste.com", "waiter123");
-        waiter.updateProfile("Waiter", "User", "waiter@utaste.com");
-        userManager.addUser(waiter);
     }
 
     private void handleLogin() {
@@ -86,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // Create session
-        currentSession = new Session(user);
+        sessionManager.createSession(user);
 
         // Navigate to appropriate home screen based on role
         Intent intent;
@@ -118,8 +102,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (currentSession != null) {
-            currentSession.logout();
-        }
+        // Don't logout here - let user explicitly logout
     }
 }

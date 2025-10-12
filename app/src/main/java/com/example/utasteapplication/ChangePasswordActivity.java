@@ -3,6 +3,7 @@ package com.example.utasteapplication;
 /**
  * Author: Othmane El Moutaouakkil
  * Change Password Activity
+ * Updated to use Singleton pattern
  */
 
 import android.os.Bundle;
@@ -11,8 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.utasteapplication.UserManager;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
@@ -34,9 +33,8 @@ public class ChangePasswordActivity extends AppCompatActivity {
         userEmail = getIntent().getStringExtra("USER_EMAIL");
         userRole = getIntent().getStringExtra("USER_ROLE");
 
-        // Initialize UserManager (in a real app, this would be a singleton)
-        userManager = new UserManager();
-        initializeDefaultUsers();
+        // Get UserManager singleton instance
+        userManager = UserManager.getInstance();
 
         // Initialize UI components
         currentPasswordInput = findViewById(R.id.current_password_input);
@@ -59,21 +57,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-
-    private void initializeDefaultUsers() {
-        // Re-create default users (in production, this would be from a database)
-        Administrator admin = new Administrator("admin@utaste.com", "admin123");
-        admin.updateProfile("Admin", "User", "admin@utaste.com");
-        userManager.addUser(admin);
-
-        Chef chef = new Chef("chef@utaste.com", "chef123");
-        chef.updateProfile("Chef", "User", "chef@utaste.com");
-        userManager.addUser(chef);
-
-        Waiter waiter = new Waiter("waiter@utaste.com", "waiter123");
-        waiter.updateProfile("Waiter", "User", "waiter@utaste.com");
-        userManager.addUser(waiter);
     }
 
     private void handleChangePassword() {

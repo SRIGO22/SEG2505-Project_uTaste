@@ -3,6 +3,7 @@ package com.example.utasteapplication;
 /**
  * Author: Othmane El Moutaouakkil
  * Manage Waiters Activity
+ * Updated to use Singleton pattern
  */
 
 import android.os.Bundle;
@@ -11,11 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ManageWaitersActivity extends AppCompatActivity {
 
@@ -23,7 +19,6 @@ public class ManageWaitersActivity extends AppCompatActivity {
     private EditText waiterPasswordInput;
     private Button addWaiterButton;
     private Button backButton;
-    private RecyclerView waitersRecyclerView;
     private String userEmail;
     private UserManager userManager;
 
@@ -35,9 +30,8 @@ public class ManageWaitersActivity extends AppCompatActivity {
         // Get user email from intent
         userEmail = getIntent().getStringExtra("USER_EMAIL");
 
-        // Initialize UserManager
-        userManager = new UserManager();
-        initializeDefaultUsers();
+        // Get UserManager singleton instance
+        userManager = UserManager.getInstance();
 
         // Initialize UI components
         waiterEmailInput = findViewById(R.id.waiter_email_input);
@@ -61,21 +55,6 @@ public class ManageWaitersActivity extends AppCompatActivity {
         });
     }
 
-    private void initializeDefaultUsers() {
-        // Re-create default users (in production, use a database)
-        Administrator admin = new Administrator("admin@utaste.com", "admin123");
-        admin.updateProfile("Admin", "User", "admin@utaste.com");
-        userManager.addUser(admin);
-
-        Chef chef = new Chef("chef@utaste.com", "chef123");
-        chef.updateProfile("Chef", "User", "chef@utaste.com");
-        userManager.addUser(chef);
-
-        Waiter waiter = new Waiter("waiter@utaste.com", "waiter123");
-        waiter.updateProfile("Waiter", "User", "waiter@utaste.com");
-        userManager.addUser(waiter);
-    }
-
     private void handleAddWaiter() {
         String email = waiterEmailInput.getText().toString().trim();
         String password = waiterPasswordInput.getText().toString().trim();
@@ -83,6 +62,12 @@ public class ManageWaitersActivity extends AppCompatActivity {
         // Validate inputs
         if (email.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate email format
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Please enter a valid email address", Toast.LENGTH_SHORT).show();
             return;
         }
 

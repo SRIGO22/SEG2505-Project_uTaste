@@ -3,6 +3,7 @@ package com.example.utasteapplication;
 /**
  * Author: Othmane El Moutaouakkil
  * Administrator Home Activity
+ * Updated to use SessionManager
  */
 
 import android.content.Intent;
@@ -19,11 +20,15 @@ public class AdministratorHomeActivity extends AppCompatActivity {
     private Button changePasswordButton;
     private Button logoutButton;
     private String userEmail;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_administrator_home);
+
+        // Get SessionManager instance
+        sessionManager = SessionManager.getInstance();
 
         // Get user email from intent
         userEmail = getIntent().getStringExtra("USER_EMAIL");
@@ -74,6 +79,9 @@ public class AdministratorHomeActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        // Logout from session
+        sessionManager.logout();
+
         Intent intent = new Intent(AdministratorHomeActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

@@ -3,6 +3,7 @@ package com.example.utasteapplication;
 /**
  * Author: Othmane El Moutaouakkil
  * Chef Home Activity
+ * Updated to use SessionManager
  */
 
 import android.content.Intent;
@@ -18,11 +19,15 @@ public class ChefHomeActivity extends AppCompatActivity {
     private Button changePasswordButton;
     private Button logoutButton;
     private String userEmail;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chef_home);
+
+        // Get SessionManager instance
+        sessionManager = SessionManager.getInstance();
 
         // Get user email from intent
         userEmail = getIntent().getStringExtra("USER_EMAIL");
@@ -59,6 +64,9 @@ public class ChefHomeActivity extends AppCompatActivity {
     }
 
     private void logout() {
+        // Logout from session
+        sessionManager.logout();
+
         Intent intent = new Intent(ChefHomeActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
