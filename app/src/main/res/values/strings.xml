@@ -1,32 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App Name -->
-    <string name="app_name">uTaste</string>
+    <string name="app_name">uTaste Application</string>
 
     <!-- Login Screen -->
-    <string name="app_logo">uTaste Logo</string>
-    <string name="login_subtitle">Restaurant Management System</string>
+    <string name="login_title">uTaste Login</string>
     <string name="email_hint">Email</string>
     <string name="password_hint">Password</string>
     <string name="login_button">Login</string>
-    <string name="default_credentials">Default accounts:\nAdmin: admin@utaste.com / admin123\nChef: chef@utaste.com / chef123\nWaiter: waiter@utaste.com / waiter123</string>
 
     <!-- Home Screens -->
     <string name="welcome_message">Welcome, %1$s!</string>
+    <string name="admin_title">Administrator Dashboard</string>
+    <string name="chef_title">Chef Dashboard</string>
+    <string name="waiter_title">Waiter Dashboard</string>
+
+    <!-- Common Buttons -->
     <string name="logout_button">Logout</string>
     <string name="change_password_button">Change Password</string>
+    <string name="back_button">Back</string>
+    <string name="save_button">Save</string>
+    <string name="cancel_button">Cancel</string>
 
-    <!-- Administrator Home -->
-    <string name="admin_title">Administrator Dashboard</string>
+    <!-- Administrator -->
     <string name="manage_waiters_button">Manage Waiters</string>
-    <string name="view_all_users_button">View All Users</string>
 
-    <!-- Chef Home -->
-    <string name="chef_title">Chef Dashboard</string>
+    <!-- Chef -->
     <string name="view_orders_button">View Orders</string>
     <string name="manage_menu_button">Manage Menu</string>
 
-    <!-- Waiter Home -->
-    <string name="waiter_title">Waiter Dashboard</string>
+    <!-- Waiter -->
     <string name="take_order_button">Take Order</string>
     <string name="view_tables_button">View Tables</string>
 
@@ -35,23 +37,10 @@
     <string name="current_password_hint">Current Password</string>
     <string name="new_password_hint">New Password</string>
     <string name="confirm_password_hint">Confirm New Password</string>
-    <string name="save_password_button">Save Password</string>
-    <string name="cancel_button">Cancel</string>
 
     <!-- Manage Waiters -->
     <string name="manage_waiters_title">Manage Waiters</string>
-    <string name="add_waiter_button">Add Waiter</string>
     <string name="waiter_email_hint">Waiter Email</string>
-    <string name="first_name_hint">First Name</string>
-    <string name="last_name_hint">Last Name</string>
-    <string name="create_waiter_button">Create Waiter</string>
-    <string name="delete_button">Delete</string>
-    <string name="edit_button">Edit</string>
-    <string name="no_waiters">No waiters found</string>
-
-    <!-- Common -->
-    <string name="back">Back</string>
-    <string name="success">Success</string>
-    <string name="error">Error</string>
-
+    <string name="waiter_password_hint">Waiter Password</string>
+    <string name="add_waiter_button">Add Waiter</string>
 </resources>
