@@ -1,0 +1,52 @@
+@startuml
+' Abstract base class for all users
+abstract class User {
+  - firstName: String
+  - lastName: String
+  - email: String
+  - password: String
+  - createdAt: DateTime
+  - modifiedAt: DateTime
+  + authenticate(): boolean
+  + changePassword(newPwd: String): void
+  + logout(): void
+}
+
+' Administrator role
+class Administrator {
+  + createWaiter(w: Waiter): void
+  + deleteWaiter(email: String): void
+  + modifyWaiter(w: Waiter): void
+}
+
+' Chef role
+class Chef {
+  ' No specific methods in Deliverable 1
+}
+
+' Waiter role
+class Waiter {
+  ' No specific methods in Deliverable 1
+}
+
+' Association class to manage login sessions
+class Session {
+  - user: User
+  - loginTime: DateTime
+  + logout(): void
+}
+
+' Interface for role-based access
+interface Role {
+  + getPermissions(): List<String>
+}
+
+User <|-- Administrator
+User <|-- Chef
+User <|-- Waiter
+
+User --> "1" Session : manages >
+Administrator ..|> Role
+Chef ..|> Role
+Waiter ..|> Role
+@enduml
