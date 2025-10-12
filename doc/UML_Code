@@ -7,46 +7,57 @@ abstract class User {
   - password: String
   - createdAt: DateTime
   - modifiedAt: DateTime
-  + authenticate(): boolean
+  + authenticate(pwd: String): boolean
   + changePassword(newPwd: String): void
+  + updateProfile(fn: String, ln: String, email: String): void
   + logout(): void
+}
+
+' Interface for role-based access
+interface Role {
+  + getRoleName(): String
 }
 
 ' Administrator role
 class Administrator {
-  + createWaiter(w: Waiter): void
+  + createWaiter(email: String): void
   + deleteWaiter(email: String): void
-  + modifyWaiter(w: Waiter): void
+  + modifyWaiter(email: String, fn: String, ln: String): void
 }
 
 ' Chef role
 class Chef {
-  ' No specific methods in Deliverable 1
+  ' No methods required in Deliverable 1
 }
 
 ' Waiter role
 class Waiter {
-  ' No specific methods in Deliverable 1
+  ' No methods required in Deliverable 1
 }
 
-' Association class to manage login sessions
+' Association class for login sessions
 class Session {
   - user: User
   - loginTime: DateTime
   + logout(): void
 }
 
-' Interface for role-based access
-interface Role {
-  + getPermissions(): List<String>
+' Class to manage the system state
+class UserManager {
+  - users: List<User>
+  + addUser(u: User): void
+  + removeUser(email: String): void
+  + findUser(email: String): User
 }
 
 User <|-- Administrator
 User <|-- Chef
 User <|-- Waiter
 
-User --> "1" Session : manages >
 Administrator ..|> Role
 Chef ..|> Role
 Waiter ..|> Role
+
+User --> "1" Session : manages >
+UserManager --> "*" User : manages >
 @enduml
