@@ -7,7 +7,7 @@ Radwan Abdurashed # 300418882
 
 Othmane Moutaouakkil #  
 
-Marven Monalliance #  
+Marven Monalliance # 300401373 
 
 ## Description
 Le projet « uTaste » consiste à concevoir et développer une application Android en Java, destinée à un restaurant gastronomique. Elle permet à différents utilisateurs (administrateur, chef cuisinier, serveur) de gérer des recettes, consulter des informations nutritionnelles, enregistrer des ventes et noter les plats.
