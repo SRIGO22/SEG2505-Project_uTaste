@@ -1,0 +1,55 @@
+graph TD
+    Start((Start)) --> Login[LoginActivity: Enter email & password]
+    Login --> ValidateLogin[Validate credentials]
+
+    ValidateLogin -->|User not found| UserNotFound([Show User not found])
+    UserNotFound --> Login
+
+    ValidateLogin -->|Incorrect password| WrongPassword([Show Incorrect password])
+    WrongPassword --> Login
+
+    ValidateLogin -->|Valid credentials| CheckRole{Check user role}
+    CheckRole -->|Administrator| AdminHome[AdministratorHomeActivity]
+    CheckRole -->|Chef| ChefHome[ChefHomeActivity]
+    CheckRole -->|Waiter| WaiterHome[WaiterHomeActivity]
+
+    %% Administrator options
+    AdminHome --> AdminOptions[Options: Manage Waiters / Change Password / Logout]
+    AdminOptions --> ManageWaiters[ManageWaitersActivity]
+    AdminOptions --> ChangePwdAdmin[ChangePasswordActivity]
+    AdminOptions --> LogoutAdmin[Logout]
+
+    %% Chef options
+    ChefHome --> ChefOptions[Options: Change Password / Logout]
+    ChefOptions --> ChangePwdChef[ChangePasswordActivity]
+    ChefOptions --> LogoutChef[Logout]
+
+    %% Waiter options
+    WaiterHome --> WaiterOptions[Options: Change Password / Logout]
+    WaiterOptions --> ChangePwdWaiter[ChangePasswordActivity]
+    WaiterOptions --> LogoutWaiter[Logout]
+
+    %% Change Password flow
+    ChangePwdAdmin --> ValidatePwdAdmin[Validate input]
+    ChangePwdChef --> ValidatePwdChef[Validate input]
+    ChangePwdWaiter --> ValidatePwdWaiter[Validate input]
+
+    ValidatePwdAdmin -->|Invalid input| ShowErrorAdmin([Show Toast error])
+    ShowErrorAdmin --> ChangePwdAdmin
+    ValidatePwdAdmin -->|Valid input| UpdatePwdAdmin[Update password]
+    UpdatePwdAdmin --> ReturnAdmin[Return to AdministratorHomeActivity]
+
+    ValidatePwdChef -->|Invalid input| ShowErrorChef([Show Toast error])
+    ShowErrorChef --> ChangePwdChef
+    ValidatePwdChef -->|Valid input| UpdatePwdChef[Update password]
+    UpdatePwdChef --> ReturnChef[Return to ChefHomeActivity]
+
+    ValidatePwdWaiter -->|Invalid input| ShowErrorWaiter([Show Toast error])
+    ShowErrorWaiter --> ChangePwdWaiter
+    ValidatePwdWaiter -->|Valid input| UpdatePwdWaiter[Update password]
+    UpdatePwdWaiter --> ReturnWaiter[Return to WaiterHomeActivity]
+
+    %% Logout flows
+    LogoutAdmin --> Login
+    LogoutChef --> Login
+    LogoutWaiter --> Login
