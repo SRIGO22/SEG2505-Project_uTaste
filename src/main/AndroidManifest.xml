@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.utaste.app">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.UTaste">
+
+        <!-- Main Login Activity -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Administrator Home Activity -->
+        <activity
+            android:name=".AdministratorHomeActivity"
+            android:parentActivityName=".LoginActivity" />
+
+        <!-- Chef Home Activity -->
+        <activity
+            android:name=".ChefHomeActivity"
+            android:parentActivityName=".LoginActivity" />
+
+        <!-- Waiter Home Activity -->
+        <activity
+            android:name=".WaiterHomeActivity"
+            android:parentActivityName=".LoginActivity" />
+
+        <!-- Change Password Activity -->
+        <activity
+            android:name=".ChangePasswordActivity"
+            android:parentActivityName=".LoginActivity" />
+
+        <!-- Manage Waiters Activity (for Admin) -->
+        <activity
+            android:name=".ManageWaitersActivity"
+            android:parentActivityName=".AdministratorHomeActivity" />
+
+    </application>
+
+</manifest>
