@@ -2,6 +2,9 @@
 * Author: Sara Rigotti
 *
 **/
+
+import java.time.LocalDateTime;
+
 public abstract class User {
     protected String firstName;
     protected String lastName;
@@ -38,7 +41,7 @@ public abstract class User {
     }
 
     private String getCurrentTimestamp() {
-        return java.time.LocalDateTime.now().toString();
+        return LocalDateTime.now().toString();
     }
 
     public abstract String getRole();
