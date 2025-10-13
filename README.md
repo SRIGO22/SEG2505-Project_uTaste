@@ -1,10 +1,10 @@
 # SEG2505-Project_uTaste
 
 ## Groupe
-Sara Rigotti # 300226854
-Radwan Abdurashed # 300418882
-Othmane Moutaouakkil # 300422326
-Marven Monalliance # 300401373
+Sara Rigotti # 300226854  
+Radwan Abdurashed # 300418882  
+Othmane Moutaouakkil # 300422326  
+Marven Monalliance # 300401373  
 
 
 ## Description
