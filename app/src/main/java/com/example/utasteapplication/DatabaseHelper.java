@@ -467,7 +467,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         values.put(COL_INGREDIENT_RECIPE_ID, ingredient.getRecipeId());
         values.put(COL_INGREDIENT_QR_CODE, ingredient.getQrCode());
-        values.put(COL_INGREDIENT_TITLE, ingredient.getTitle());
+        values.put(COL_INGREDIENT_TITLE, ingredient.getName());
         values.put(COL_INGREDIENT_QUANTITY, ingredient.getQuantityPercentage());
         values.put(COL_INGREDIENT_ADDED_AT, getCurrentTimestamp());
 
