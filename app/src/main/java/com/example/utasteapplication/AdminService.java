@@ -1,4 +1,4 @@
-/*
+package com.example.utasteapplication;/*
 * Author: Sara Rigotti
 */
 

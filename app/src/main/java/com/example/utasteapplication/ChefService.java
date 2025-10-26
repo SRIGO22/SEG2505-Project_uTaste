@@ -1,60 +1,109 @@
-/*
-* Author: Sara Rigotti
-*/
+package com.example.utasteapplication;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 public class ChefService {
-    private DatabaseHelper dbHelper;
+    private final DatabaseHelper dbHelper;
 
     public ChefService(Context context) {
         dbHelper = new DatabaseHelper(context);
     }
 
-    public void createRecipe(Recipe recipe) {
+    public long createRecipe(Recipe recipe) {
+        if (!recipe.isValid()) return -1;
+
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("name", recipe.name);
-        values.put("imagePath", recipe.imagePath);
-        values.put("description", recipe.description);
-        db.insert("recipes", null, values);
+        long id = -1;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("name", recipe.getName());
+            values.put("imagePath", recipe.getImagePath());
+            values.put("description", recipe.getDescription());
+            values.put("createdAt", recipe.getCreatedAt());
+            values.put("modifiedAt", recipe.getModifiedAt());
+            id = db.insert("recipes", null, values);
+        } finally {
+            db.close();
+        }
+
+        return id;
     }
 
-    public void updateRecipe(int recipeId, String newName, String newDescription) {
+    public int updateRecipe(int recipeId, String newName, String newDescription) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("name", newName);
-        values.put("description", newDescription);
-        db.update("recipes", values, "id = ?", new String[]{String.valueOf(recipeId)});
+        int rows;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("name", newName);
+            values.put("description", newDescription);
+            values.put("modifiedAt", System.currentTimeMillis());
+            rows = db.update("recipes", values, "id = ?", new String[]{String.valueOf(recipeId)});
+        } finally {
+            db.close();
+        }
+
+        return rows;
     }
 
     public void deleteRecipe(int recipeId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete("ingredients", "recipeId = ?", new String[]{String.valueOf(recipeId)});
-        db.delete("recipes", "id = ?", new String[]{String.valueOf(recipeId)});
+
+        try {
+            db.beginTransaction();
+            db.delete("ingredients", "recipeId = ?", new String[]{String.valueOf(recipeId)});
+            db.delete("recipes", "id = ?", new String[]{String.valueOf(recipeId)});
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
     }
 
-    public void addIngredient(Ingredient ingredient) {
+    public long addIngredient(Ingredient ingredient) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("recipeId", ingredient.recipeId);
-        values.put("title", ingredient.title);
-        values.put("qrCode", ingredient.qrCode);
-        values.put("quantityPercent", ingredient.quantityPercent);
-        db.insert("ingredients", null, values);
+        long id;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("recipeId", ingredient.getRecipeId());
+            values.put("title", ingredient.getTitle());
+            values.put("qrCode", ingredient.getQrCode());
+            values.put("quantityPercent", ingredient.getQuantityPercent());
+            id = db.insert("ingredients", null, values);
+        } finally {
+            db.close();
+        }
+
+        return id;
     }
 
-    public void updateIngredientQuantity(int ingredientId, double newPercent) {
+    public int updateIngredientQuantity(int ingredientId, double newPercent) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("quantityPercent", newPercent);
-        db.update("ingredients", values, "id = ?", new String[]{String.valueOf(ingredientId)});
+        int rows;
+
+        try {
+            ContentValues values = new ContentValues();
+            values.put("quantityPercent", newPercent);
+            rows = db.update("ingredients", values, "id = ?", new String[]{String.valueOf(ingredientId)});
+        } finally {
+            db.close();
+        }
+
+        return rows;
     }
 
     public void deleteIngredient(int ingredientId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete("ingredients", "id = ?", new String[]{String.valueOf(ingredientId)});
+
+        try {
+            db.delete("ingredients", "id = ?", new String[]{String.valueOf(ingredientId)});
+        } finally {
+            db.close();
+        }
     }
 }

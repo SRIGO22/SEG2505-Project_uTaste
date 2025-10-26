@@ -12,19 +12,24 @@ public class Recipe {
     private String name;
     private String imagePath; // Path to local image resource
     private String description;
-    private String createdAt;
-    private String modifiedAt;
+    // Timestamps are final to ensure they are set only on creation/loading
+    private final String createdAt;
+    private String modifiedAt; // Not final, as it changes on modification
 
     /**
      * Constructor for new recipe (before database insertion)
+     * Timestamps will be null and set by the database
      * @param name Unique recipe name
      * @param imagePath Path to image resource (e.g., "recipe_image_1")
      * @param description Recipe description
      */
     public Recipe(String name, String imagePath, String description) {
-        this.name = name;
-        this.imagePath = imagePath;
-        this.description = description;
+        // Apply defensive trimming immediately
+        this.name = name != null ? name.trim() : null;
+        this.imagePath = imagePath != null ? imagePath.trim() : null;
+        this.description = description != null ? description.trim() : null;
+        this.createdAt = null; // DB will set this
+        this.modifiedAt = null; // DB will set this
     }
 
     /**
@@ -39,9 +44,10 @@ public class Recipe {
     public Recipe(int id, String name, String imagePath, String description,
                   String createdAt, String modifiedAt) {
         this.id = id;
-        this.name = name;
-        this.imagePath = imagePath;
-        this.description = description;
+        this.name = name != null ? name.trim() : null;
+        this.imagePath = imagePath != null ? imagePath.trim() : null;
+        this.description = description != null ? description.trim() : null;
+        // Timestamps loaded from DB are set as final
         this.createdAt = createdAt;
         this.modifiedAt = modifiedAt;
     }
@@ -77,37 +83,47 @@ public class Recipe {
     }
 
     public void setName(String name) {
-        this.name = name;
+        // Defensive trimming to prevent "Pizza" vs "  Pizza " duplicates
+        this.name = name != null ? name.trim() : null;
     }
 
     public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
+        // Defensive trimming
+        this.imagePath = imagePath != null ? imagePath.trim() : null;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        // Defensive trimming
+        this.description = description != null ? description.trim() : null;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
+    /**
+     * Set modifiedAt, used by the DatabaseHelper when updating a record.
+     * @param modifiedAt Last modification timestamp
+     */
     public void setModifiedAt(String modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
+
+    // Removed setCreatedAt because it is managed as a 'final' field or by the database insert logic.
+    // Removed setId because it should only be set by the DB upon insertion (or in the DB constructor).
 
     /**
      * Validates the recipe data
      * @return true if recipe is valid, false otherwise
      */
     public boolean isValid() {
-        if (name == null || name.trim().isEmpty()) {
+        if (name == null || name.isEmpty()) { // .trim() is not needed here if setName() is used
             return false;
         }
-        if (description == null || description.trim().isEmpty()) {
+        if (description == null || description.isEmpty()) {
             return false;
         }
-        if (imagePath == null || imagePath.trim().isEmpty()) {
+        if (imagePath == null || imagePath.isEmpty()) {
+            return false;
+        }
+        // Optional UX check: limit description length
+        if (description.length() > 500) { // Example limit
             return false;
         }
         return true;
@@ -160,6 +176,7 @@ public class Recipe {
 
         Recipe recipe = (Recipe) obj;
 
+        // Use equals on the name field
         return name != null ? name.equals(recipe.name) : recipe.name == null;
     }
 

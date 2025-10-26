@@ -11,7 +11,7 @@ public class RecipeIngredient {
     private int id;
     private int recipeId;
     private String qrCode;
-    private String title; // User-entered title for the ingredient
+    private String name; // User-entered Name for the ingredient
     private double quantityPercentage; // Percentage of the ingredient (e.g., 20%, 25%)
     private String addedAt;
 
@@ -19,13 +19,13 @@ public class RecipeIngredient {
      * Constructor for new ingredient (before database insertion)
      * @param recipeId The ID of the recipe this ingredient belongs to
      * @param qrCode The QR code scanned for this ingredient
-     * @param title User-entered name/title for the ingredient
+     * @param Name User-entered name/Name for the ingredient
      * @param quantityPercentage Percentage quantity (0-100)
      */
-    public RecipeIngredient(int recipeId, String qrCode, String title, double quantityPercentage) {
+    public RecipeIngredient(int recipeId, String qrCode, String Name, double quantityPercentage) {
         this.recipeId = recipeId;
         this.qrCode = qrCode;
-        this.title = title;
+        this.name = Name;
         this.quantityPercentage = quantityPercentage;
     }
 
@@ -34,16 +34,16 @@ public class RecipeIngredient {
      * @param id Database ID
      * @param recipeId The ID of the recipe this ingredient belongs to
      * @param qrCode The QR code for this ingredient
-     * @param title The ingredient name/title
+     * @param Name The ingredient name/Name
      * @param quantityPercentage Percentage quantity (0-100)
      * @param addedAt Timestamp when ingredient was added
      */
-    public RecipeIngredient(int id, int recipeId, String qrCode, String title,
+    public RecipeIngredient(int id, int recipeId, String qrCode, String Name,
                             double quantityPercentage, String addedAt) {
         this.id = id;
         this.recipeId = recipeId;
         this.qrCode = qrCode;
-        this.title = title;
+        this.name = Name;
         this.quantityPercentage = quantityPercentage;
         this.addedAt = addedAt;
     }
@@ -61,8 +61,8 @@ public class RecipeIngredient {
         return qrCode;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
     public double getQuantityPercentage() {
@@ -86,8 +86,8 @@ public class RecipeIngredient {
         this.qrCode = qrCode;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setname(String name) {
+        this.name = name;
     }
 
     public void setQuantityPercentage(double quantityPercentage) {
@@ -109,7 +109,7 @@ public class RecipeIngredient {
      * @return true if ingredient is valid, false otherwise
      */
     public boolean isValid() {
-        if (title == null || title.trim().isEmpty()) {
+        if (name == null || name.trim().isEmpty()) {
             return false;
         }
         if (qrCode == null || qrCode.trim().isEmpty()) {
@@ -130,7 +130,7 @@ public class RecipeIngredient {
      */
     @Override
     public String toString() {
-        return title + " - " + String.format("%.1f", quantityPercentage) + "%";
+        return name + " - " + String.format("%.1f", quantityPercentage) + "%";
     }
 
     /**
@@ -141,7 +141,7 @@ public class RecipeIngredient {
         return "Ingredient{" +
                 "id=" + id +
                 ", recipeId=" + recipeId +
-                ", title='" + title + '\'' +
+                ", name='" + name + '\'' +
                 ", qrCode='" + qrCode + '\'' +
                 ", quantityPercentage=" + quantityPercentage +
                 "%, addedAt='" + addedAt + '\'' +
@@ -153,7 +153,7 @@ public class RecipeIngredient {
      * @return A new RecipeIngredient with the same values
      */
     public RecipeIngredient copy() {
-        return new RecipeIngredient(id, recipeId, qrCode, title, quantityPercentage, addedAt);
+        return new RecipeIngredient(id, recipeId, qrCode, name, quantityPercentage, addedAt);
     }
 
     /**
