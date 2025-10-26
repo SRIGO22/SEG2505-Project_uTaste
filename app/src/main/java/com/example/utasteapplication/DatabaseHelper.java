@@ -326,7 +326,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public boolean deleteUser(String email) {
         // Don't allow deletion of default users
-        if (email.equals("admin@utaste.com") || email.equals("chef@utaste.com")) {
+        if (email.equals("admin@utaste.com") || email.equals("chef@utaste.com") || email.equals("waiter@utaste.com")) {
             return false;
         }
 
