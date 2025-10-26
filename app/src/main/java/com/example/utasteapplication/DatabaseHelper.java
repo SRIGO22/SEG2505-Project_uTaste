@@ -23,7 +23,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "utaste.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2; // Updated for schema change
 
     // Users table
     private static final String TABLE_USERS = "users";
@@ -68,6 +68,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    @Override
     public void onCreate(SQLiteDatabase db) {
         // Create users table
         String createUsersTable = "CREATE TABLE " + TABLE_USERS + " (" +
@@ -103,9 +109,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 TABLE_RECIPES + "(" + COL_RECIPE_ID + ") ON DELETE CASCADE)";
         db.execSQL(createIngredientsTable);
 
-        // Enable foreign key constraints
-        db.execSQL("PRAGMA foreign_keys=ON;");
-
         // Initialize default users
         initializeDefaultUsers(db);
     }
@@ -116,12 +119,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECIPES);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         onCreate(db);
-    }
-
-    @Override
-    public void onOpen(SQLiteDatabase db) {
-        super.onOpen(db);
-        db.execSQL("PRAGMA foreign_keys=ON;");
     }
 
     private void initializeDefaultUsers(SQLiteDatabase db) {
@@ -285,8 +282,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 String email = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_EMAIL));
-                User user = getUserByEmail(email);
+                String role = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_ROLE));
+                String password = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_PASSWORD));
+                String firstName = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_FIRST_NAME));
+                String lastName = cursor.getString(cursor.getColumnIndexOrThrow(COL_USER_LAST_NAME));
+
+                User user = null;
+                switch (role) {
+                    case "Administrator":
+                        user = new Administrator(email, password);
+                        break;
+                    case "Chef":
+                        user = new Chef(email, password);
+                        break;
+                    case "Waiter":
+                        user = new Waiter(email, password);
+                        break;
+                }
+
                 if (user != null) {
+                    user.updateProfile(firstName, lastName, email);
                     users.add(user);
                 }
             } while (cursor.moveToNext());
@@ -325,7 +340,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Delete user by email
      */
     public boolean deleteUser(String email) {
-        // Don't allow deletion of default users
+        // Block deletion of default users
         if (email.equals("admin@utaste.com") || email.equals("chef@utaste.com") || email.equals("waiter@utaste.com")) {
             return false;
         }
@@ -341,6 +356,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Add a new recipe
      */
     public long addRecipe(Recipe recipe) {
+        // Prevent duplicate names
+        if(getRecipeByName(recipe.getName()) != null) return -1;
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         String timestamp = getCurrentTimestamp();
@@ -464,11 +482,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public long addIngredient(RecipeIngredient ingredient) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
+        double quantity = ingredient.getQuantityPercentage();
+
+        // Clamp quantity to a maximum of 100%
+        if (quantity > 100.0) {
+            quantity = 100.0;
+        }
 
         values.put(COL_INGREDIENT_RECIPE_ID, ingredient.getRecipeId());
         values.put(COL_INGREDIENT_QR_CODE, ingredient.getQrCode());
         values.put(COL_INGREDIENT_TITLE, ingredient.getName());
-        values.put(COL_INGREDIENT_QUANTITY, ingredient.getQuantityPercentage());
+        values.put(COL_INGREDIENT_QUANTITY, quantity);
         values.put(COL_INGREDIENT_ADDED_AT, getCurrentTimestamp());
 
         long result = db.insert(TABLE_INGREDIENTS, null, values);
@@ -527,15 +551,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Update ingredient quantity
+     * Update ingredient (QR, title, and quantity)
      */
-    public boolean updateIngredientQuantity(int ingredientId, double newQuantity) {
+    public boolean updateIngredient(int id, String qr, String title, double quantity) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(COL_INGREDIENT_QUANTITY, newQuantity);
 
-        int rows = db.update(TABLE_INGREDIENTS, values, COL_INGREDIENT_ID + "=?",
-                new String[]{String.valueOf(ingredientId)});
+        // Clamp quantity to a maximum of 100%
+        if (quantity > 100.0) {
+            quantity = 100.0;
+        }
+
+        values.put(COL_INGREDIENT_QR_CODE, qr);
+        values.put(COL_INGREDIENT_TITLE, title);
+        values.put(COL_INGREDIENT_QUANTITY, quantity);
+        int rows = db.update(TABLE_INGREDIENTS, values, COL_INGREDIENT_ID+"=?", new String[]{String.valueOf(id)});
         return rows > 0;
     }
 
@@ -549,11 +579,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return rows > 0;
     }
 
+    /**
+     * Count how many ingredients belong to a specific recipe
+     */
+    public int getIngredientCount(int recipeId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT COUNT(*) FROM " + TABLE_INGREDIENTS + " WHERE " + COL_INGREDIENT_RECIPE_ID + "=?",
+                new String[]{ String.valueOf(recipeId) }
+        );
+        int count = 0;
+        if (cursor != null && cursor.moveToFirst()) {
+            count = cursor.getInt(0);
+            cursor.close();
+        }
+        return count;
+    }
+
     // ==================== DATABASE MANAGEMENT ====================
 
     /**
      * Reset entire database to initial state
-     * Deletes all data and recreates default users
+     * Deletes all data, resets autoincrement IDs, and recreates default users
      */
     public void resetDatabase() {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -562,6 +609,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_INGREDIENTS, null, null);
         db.delete(TABLE_RECIPES, null, null);
         db.delete(TABLE_USERS, null, null);
+
+        // Reset autoincrement IDs
+        db.execSQL("DELETE FROM sqlite_sequence WHERE name='" + TABLE_USERS + "'");
+        db.execSQL("DELETE FROM sqlite_sequence WHERE name='" + TABLE_RECIPES + "'");
+        db.execSQL("DELETE FROM sqlite_sequence WHERE name='" + TABLE_INGREDIENTS + "'");
 
         // Reinitialize default users
         initializeDefaultUsers(db);
