@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Ingredient Name -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ingredient Name"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+        <EditText
+            android:id="@+id/editText_ingredient_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter ingredient name"
+            android:inputType="textPersonName"/>
+
+        <!-- QR Code -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="QR Code"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/editText_ingredient_qrcode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Scan or enter QR code"
+            android:inputType="text"/>
+
+        <!-- Quantity Percentage -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quantity (%)"
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"/>
+        <EditText
+            android:id="@+id/editText_ingredient_quantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter quantity percentage"
+            android:inputType="numberDecimal"/>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="24dp">
+
+            <Button
+                android:id="@+id/button_cancel_ingredient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancel"/>
+
+            <Button
+                android:id="@+id/button_save_ingredient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:layout_marginStart="16dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

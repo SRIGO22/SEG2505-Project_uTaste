@@ -50,7 +50,7 @@ public class ManageIngredientsActivity extends AppCompatActivity {
         loadIngredients();
 
         btnAddIngredient.setOnClickListener(view -> {
-            Intent i = new Intent(ManageIngredientsActivity.this, AddIngredientActivity.class);
+            Intent i = new Intent(ManageIngredientsActivity.this, AddEditIngredientActivity.class);
             i.putExtra("recipeId", recipeId);
             i.putExtra("recipeName", recipeName);
             startActivity(i);

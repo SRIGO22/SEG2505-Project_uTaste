@@ -79,10 +79,12 @@ public class AddEditRecipeActivity extends AppCompatActivity {
 
         if (recipeId > 0 && currentRecipe != null) {
             // Update existing recipe
-            currentRecipe.setName(name);
-            currentRecipe.setDescription(description);
-            currentRecipe.setImagePath(imagePath);
-            boolean success = dbHelper.updateRecipe(currentRecipe);
+            boolean success = dbHelper.updateRecipe(
+                    currentRecipe.getId(),
+                    name,
+                    imagePath,
+                    description
+            );
             if (success) {
                 Toast.makeText(this, "Recipe updated successfully", Toast.LENGTH_SHORT).show();
             } else {
@@ -91,8 +93,8 @@ public class AddEditRecipeActivity extends AppCompatActivity {
         } else {
             // Create new recipe
             Recipe newRecipe = new Recipe(name, imagePath, description);
-            boolean success = dbHelper.createRecipe(newRecipe);
-            if (success) {
+            long result = dbHelper.addRecipe(newRecipe); // Use addRecipe
+            if (result != -1) {
                 Toast.makeText(this, "Recipe added successfully", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "Failed to add recipe", Toast.LENGTH_SHORT).show();
@@ -100,5 +102,6 @@ public class AddEditRecipeActivity extends AppCompatActivity {
         }
 
         finish();
+
     }
 }
