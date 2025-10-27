@@ -10,19 +10,12 @@ package com.example.utasteapplication;
 public class Recipe {
     private int id;
     private String name;
-    private String imagePath; // Path to local image resource
+    private String imagePath; // Chemin vers l'image locale
     private String description;
-    // Timestamps are final to ensure they are set only on creation/loading
-    private final String createdAt;
-    private String modifiedAt; // Not final, as it changes on modification
+    private final String createdAt;// Défini seulement à la création ou au chargement
+    private String modifiedAt; // Peut changer lors d'une modification
 
-    /**
-     * Constructor for new recipe (before database insertion)
-     * Timestamps will be null and set by the database
-     * @param name Unique recipe name
-     * @param imagePath Path to image resource (e.g., "recipe_image_1")
-     * @param description Recipe description
-     */
+    // Constructeur utilisé quand on crée une nouvelle recette (avant l’ajout à la base de données)
     public Recipe(String name, String imagePath, String description) {
         // Apply defensive trimming immediately
         this.name = name != null ? name.trim() : null;
@@ -47,12 +40,11 @@ public class Recipe {
         this.name = name != null ? name.trim() : null;
         this.imagePath = imagePath != null ? imagePath.trim() : null;
         this.description = description != null ? description.trim() : null;
-        // Timestamps loaded from DB are set as final
-        this.createdAt = createdAt;
-        this.modifiedAt = modifiedAt;
+        this.createdAt = createdAt; // La base de données remplira cette valeur
+        this.modifiedAt = modifiedAt; // Idem
     }
 
-    // Getters
+    // Constructeur utilisé pour une recette déjà existante dans la base de données
     public int getId() {
         return id;
     }
@@ -77,43 +69,46 @@ public class Recipe {
         return modifiedAt;
     }
 
-    // Setters
     public void setId(int id) {
         this.id = id;
     }
 
     public void setName(String name) {
-        // Defensive trimming to prevent "Pizza" vs "  Pizza " duplicates
-        this.name = name != null ? name.trim() : null;
+        // On nettoie le texte pour éviter les doublons avec des espaces
+        if (name != null) {
+            this.name = name.trim();
+        } else {
+            this.name = null;
+        }
     }
 
     public void setImagePath(String imagePath) {
-        // Defensive trimming
-        this.imagePath = imagePath != null ? imagePath.trim() : null;
+        // On enlève les espaces inutiles s’il y en a
+        if (imagePath != null) {
+            this.imagePath = imagePath.trim();
+        } else {
+            this.imagePath = null;
+        }
     }
+
 
     public void setDescription(String description) {
-        // Defensive trimming
-        this.description = description != null ? description.trim() : null;
+        // Même chose pour la description
+        if (description != null) {
+            this.description = description.trim();
+        } else {
+            this.description = null;
+        }
     }
 
-    /**
-     * Set modifiedAt, used by the DatabaseHelper when updating a record.
-     * @param modifiedAt Last modification timestamp
-     */
+    // Met à jour la date de dernière modification
     public void setModifiedAt(String modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 
-    // Removed setCreatedAt because it is managed as a 'final' field or by the database insert logic.
-    // Removed setId because it should only be set by the DB upon insertion (or in the DB constructor).
-
-    /**
-     * Validates the recipe data
-     * @return true if recipe is valid, false otherwise
-     */
+    // Vérifie que la recette contient les infos essentielles
     public boolean isValid() {
-        if (name == null || name.isEmpty()) { // .trim() is not needed here if setName() is used
+        if (name == null || name.isEmpty()) {
             return false;
         }
         if (description == null || description.isEmpty()) {
@@ -122,26 +117,19 @@ public class Recipe {
         if (imagePath == null || imagePath.isEmpty()) {
             return false;
         }
-        // Optional UX check: limit description length
-        if (description.length() > 500) { // Example limit
+        if (description.length() > 500) { // Longueur max d’exemple
             return false;
         }
         return true;
     }
 
-    /**
-     * Returns the recipe name for display in lists
-     * @return Recipe name
-     */
+    // Retourne juste le nom de la recette (utile pour les listes)
     @Override
     public String toString() {
         return name;
     }
 
-    /**
-     * Returns detailed information about the recipe
-     * @return Detailed string representation
-     */
+    // Donne une version plus détaillée de la recette (utile pour le débogage)
     public String toDetailedString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Recipe: ").append(name).append("\n");
@@ -156,19 +144,12 @@ public class Recipe {
         return sb.toString();
     }
 
-    /**
-     * Creates a copy of this recipe
-     * @return A new Recipe with the same values
-     */
+    // Crée une copie complète de la recette actuelle
     public Recipe copy() {
         return new Recipe(id, name, imagePath, description, createdAt, modifiedAt);
     }
 
-    /**
-     * Compare two recipes for equality based on name (unique constraint)
-     * @param obj Object to compare
-     * @return true if recipes have the same name
-     */
+    // Vérifie si deux recettes sont identiques (même nom)
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -180,10 +161,7 @@ public class Recipe {
         return name != null ? name.equals(recipe.name) : recipe.name == null;
     }
 
-    /**
-     * Generate hash code based on recipe name
-     * @return hash code
-     */
+    // Génère un code unique basé sur le nom de la recette
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
