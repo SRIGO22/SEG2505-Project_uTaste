@@ -1,0 +1,40 @@
+@startuml
+start
+
+:User opens app;
+:Enter email and password;
+:Submit login form;
+
+if (Credentials valid?) then (yes)
+  :Create session;
+  :Get user role;
+
+  switch (Role)
+    case (Administrator)
+      :Show Admin Home;
+      :Manage Waiters;
+      :Reset DB or Password;
+      :Update User Profile;
+      :Change own password;
+      :Logout;
+    case (Chef)
+      :Show Chef Home;
+      :Create/Edit/Delete Recipe;
+      :Add/Edit/Delete Ingredient;
+      :Change own password;
+      :Logout;
+    case (Waiter)
+      :Show Waiter Home;
+      :View Recipes;
+      :Record Sale;
+      :View Sales Summary;
+      :Change own password;
+      :Logout;
+  endswitch
+
+else (no)
+  :Show error message;
+endif
+
+stop
+@enduml
