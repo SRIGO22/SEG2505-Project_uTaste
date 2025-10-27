@@ -2,8 +2,10 @@ package com.example.utasteapplication;
 
 /*
  * Author: Othmane El Moutaouakkil
+ * Updated: Return new recipe ID to ManageRecipesActivity
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -16,7 +18,7 @@ public class AddEditRecipeActivity extends AppCompatActivity {
 
     private EditText nameEditText;
     private EditText descriptionEditText;
-    private EditText imagePathEditText; // Optional: path to local image
+    private EditText imagePathEditText;
     private Button saveButton;
     private Button cancelButton;
 
@@ -31,14 +33,13 @@ public class AddEditRecipeActivity extends AppCompatActivity {
 
         dbHelper = DatabaseHelper.getInstance(this);
 
-        // Initialize UI elements
         nameEditText = findViewById(R.id.editText_recipe_name);
         descriptionEditText = findViewById(R.id.editText_recipe_description);
         imagePathEditText = findViewById(R.id.editText_recipe_image);
         saveButton = findViewById(R.id.button_save_recipe);
         cancelButton = findViewById(R.id.button_cancel);
 
-        // Check if editing an existing recipe
+        // Check if editing existing recipe
         if (getIntent() != null && getIntent().hasExtra("RECIPE_ID")) {
             recipeId = getIntent().getIntExtra("RECIPE_ID", -1);
             loadRecipe(recipeId);
@@ -90,18 +91,24 @@ public class AddEditRecipeActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(this, "Failed to update recipe", Toast.LENGTH_SHORT).show();
             }
+            finish(); // no ingredients prompt for updates
         } else {
             // Create new recipe
             Recipe newRecipe = new Recipe(name, imagePath, description);
-            long result = dbHelper.addRecipe(newRecipe); // Use addRecipe
-            if (result != -1) {
+            long newId = dbHelper.addRecipe(newRecipe);
+            if (newId != -1) {
                 Toast.makeText(this, "Recipe added successfully", Toast.LENGTH_SHORT).show();
+
+                // Return new recipe ID to ManageRecipesActivity
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("NEW_RECIPE_ID", (int) newId); // cast long to int safely
+                setResult(RESULT_OK, resultIntent);
             } else {
                 Toast.makeText(this, "Failed to add recipe", Toast.LENGTH_SHORT).show();
             }
+            finish();
         }
-
-        finish();
-
     }
+
 }
+
