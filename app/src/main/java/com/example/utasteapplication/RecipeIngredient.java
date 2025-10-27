@@ -3,37 +3,23 @@ package com.example.utasteapplication;
  * Author: Othmane El Moutaouakkil
  */
 
-/**
- * RecipeIngredient Model Class
- * Represents an ingredient added to a recipe with QR code and quantity percentage
- */
+// Cette classe représente un ingrédient d'une recette
+// Chaque ingrédient possède un nom, un code QR et une proportion dans la recette
 public class RecipeIngredient {
     private int id;
     private int recipeId;
     private String qrCode;
-    private String name; // User-entered name for the ingredient
-    private double quantityPercentage; // Percentage of the ingredient (0-100)
-    // Making addedAt final if loaded from DB, assuming it's set once.
-    private final String addedAt;
+    private String name; // Nom de l’ingrédient saisi par l’utilisateur
+    private double quantityPercentage; // Pourcentage de cet ingrédient (entre 0 et 100)
+    private final String addedAt; // Date à laquelle l’ingrédient a été ajouté (fixe une fois défini)
 
-    /**
-     * Helper to defensively trim strings.
-     * @param str The input string.
-     * @return The trimmed string or null.
-     */
+    // Méthode utilitaire pour nettoyer une chaîne de texte (supprime les espaces inutiles)
     private String cleanString(String str) {
         return str != null ? str.trim() : null;
     }
 
-    /**
-     * Constructor for new ingredient (before database insertion)
-     * Timestamps will be null and set by the database
-     * @param recipeId The ID of the recipe this ingredient belongs to
-     * @param qrCode The QR code scanned for this ingredient
-     * @param name User-entered name/Name for the ingredient
-     * @param quantityPercentage Percentage quantity (0-100)
-     */
-    // Fix: Parameter 'Name' changed to 'name' for convention.
+    // Constructeur utilisé pour un nouvel ingrédient avant l’insertion en base de données
+    // La date sera ajoutée automatiquement par la base de données
     public RecipeIngredient(int recipeId, String qrCode, String name, double quantityPercentage) {
         this.recipeId = recipeId;
         // Improvement: Apply defensive trimming
@@ -43,25 +29,15 @@ public class RecipeIngredient {
         this.addedAt = null; // DB will set this
     }
 
-    /**
-     * Constructor for existing ingredient (from database)
-     * @param id Database ID
-     * @param recipeId The ID of the recipe this ingredient belongs to
-     * @param qrCode The QR code for this ingredient
-     * @param name The ingredient name/Name
-     * @param quantityPercentage Percentage quantity (0-100)
-     * @param addedAt Timestamp when ingredient was added
-     */
-    // Fix: Parameter 'Name' changed to 'name' for convention.
+    // Constructeur utilisé pour un ingrédient déjà existant (chargé depuis la base de données)
     public RecipeIngredient(int id, int recipeId, String qrCode, String name,
                             double quantityPercentage, String addedAt) {
         this.id = id;
         this.recipeId = recipeId;
-        // Improvement: Apply defensive trimming
         this.qrCode = cleanString(qrCode);
         this.name = cleanString(name);
         this.quantityPercentage = quantityPercentage;
-        this.addedAt = addedAt; // Loaded as final
+        this.addedAt = addedAt; // Valeur déjà définie en base de données
     }
 
     // Getters
@@ -111,8 +87,8 @@ public class RecipeIngredient {
         this.name = cleanString(name);
     }
 
+    // Définit la proportion de l’ingrédient en vérifiant que la valeur est dans les limites
     public void setQuantityPercentage(double quantityPercentage) {
-        // Your boundary-checking logic is good and is kept.
         if (quantityPercentage < 0) {
             this.quantityPercentage = 0;
         } else if (quantityPercentage > 100) {
@@ -122,21 +98,14 @@ public class RecipeIngredient {
         }
     }
 
-    // Removed setAddedAt because it's managed as a 'final' field or by the database insert logic.
-
-    /**
-     * Validates the ingredient data
-     * @return true if ingredient is valid, false otherwise
-     */
+    // Vérifie si les données de l’ingrédient sont valides
     public boolean isValid() {
-        if (name == null || name.isEmpty()) { // .isEmpty() is sufficient if cleanString() is used
+        if (name == null || name.isEmpty()) {
             return false;
         }
         if (qrCode == null || qrCode.isEmpty()) {
             return false;
         }
-        // Fix/Clarification: Allows 0% quantity, as quantityPercentage >= 0.
-        // It's up to the user to decide if 0% is meaningful, but this is safer than disabling it.
         if (quantityPercentage < 0 || quantityPercentage > 100) {
             return false;
         }
@@ -146,19 +115,13 @@ public class RecipeIngredient {
         return true;
     }
 
-    /**
-     * Returns a formatted string representation of the ingredient
-     * @return String with ingredient details
-     */
+    // Retourne une courte description de l’ingrédient (utile pour les listes)
     @Override
     public String toString() {
         return name + " - " + String.format("%.1f", quantityPercentage) + "%";
     }
 
-    /**
-     * Returns detailed information about the ingredient
-     * @return Detailed string representation
-     */
+    // Retourne une version détaillée de l’ingrédient (utile pour le débogage)
     public String toDetailedString() {
         return "Ingredient{" +
                 "id=" + id +
@@ -170,19 +133,12 @@ public class RecipeIngredient {
                 '}';
     }
 
-    /**
-     * Creates a copy of this ingredient
-     * @return A new RecipeIngredient with the same values
-     */
+    // Crée une copie complète de cet ingrédient
     public RecipeIngredient copy() {
         return new RecipeIngredient(id, recipeId, qrCode, name, quantityPercentage, addedAt);
     }
 
-    /**
-     * Compare two ingredients for equality based on QR code and recipe ID
-     * @param obj Object to compare
-     * @return true if ingredients are equal
-     */
+    // Compare deux ingrédients selon leur code QR et leur recette associée
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -191,20 +147,25 @@ public class RecipeIngredient {
         RecipeIngredient that = (RecipeIngredient) obj;
 
         if (recipeId != that.recipeId) return false;
-        // Improvement: Use cleanString() on current object's field just in case it wasn't trimmed.
-        return cleanString(qrCode) != null ? cleanString(qrCode).equals(cleanString(that.qrCode)) : cleanString(that.qrCode) == null;
+
+        String thisQr = cleanString(qrCode);
+        String thatQr = cleanString(that.qrCode);
+
+        if (thisQr != null) {
+            return thisQr.equals(thatQr);
+        } else {
+            return thatQr == null;
+        }
     }
 
-    /**
-     * Generate hash code based on recipe ID and QR code
-     * @return hash code
-     */
+    // Génère un code de hachage basé sur le code QR et l’ID de la recette
     @Override
     public int hashCode() {
         int result = recipeId;
-        // Improvement: Use cleanString() on qrCode for consistent hashing.
         String cleanedQrCode = cleanString(qrCode);
-        result = 31 * result + (cleanedQrCode != null ? cleanedQrCode.hashCode() : 0);
+        if (cleanedQrCode != null) {
+            result = 31 * result + cleanedQrCode.hashCode();
+        }
         return result;
     }
 }

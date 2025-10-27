@@ -84,10 +84,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Gère à la fois l’ajout et la modification d’un ingrédient.
-     * Vérifie la validité des champs avant de sauvegarder dans la base de données.
-     */
+    // Gère à la fois l’ajout et la modification d’un ingrédient
     private void sauvegarderIngredient() {
         String nom = nomInput.getText().toString().trim();
         String qrCode = qrCodeInput.getText().toString().trim();

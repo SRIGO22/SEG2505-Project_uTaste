@@ -67,14 +67,12 @@ public class ChangePasswordActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Gère le processus complet de changement de mot de passe :
-     * 1️ Vérifie que les champs sont remplis.
-     * 2️ Compare les nouveaux mots de passe.
-     * 3️ Valide la longueur du nouveau mot de passe.
-     * 4️ Authentifie l’utilisateur.
-     * 5️ Enregistre le nouveau mot de passe s’il est valide.
-     */
+    // Cette méthode gère tout le processus de changement de mot de passe :
+    // 1. Vérifie que tous les champs ont été remplis
+    // 2. Compare les deux nouveaux mots de passe pour s’assurer qu’ils correspondent
+    // 3. Vérifie que le nouveau mot de passe est assez long
+    // 4. Authentifie l’utilisateur avec son ancien mot de passe
+    // 5. Si tout est bon, enregistre le nouveau mot de passe
     private void handleChangePassword() {
 
         // Récupère les valeurs entrées et enlève les espaces

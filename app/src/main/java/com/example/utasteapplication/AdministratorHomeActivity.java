@@ -20,13 +20,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AdministratorHomeActivity extends AppCompatActivity {
 
-    // ----- Composants graphiques de l’interface -----
-    private TextView welcomeText;           // Message de bienvenue affiché à l’administrateur
+    // Éléments visuels de l’interface
+    private TextView welcomeText;           // Message de bienvenue pour l’administrateur
     private Button manageWaitersButton;     // Bouton pour accéder à la gestion des serveurs
-    private Button changePasswordButton;    // Bouton pour modifier le mot de passe
-    private Button logoutButton;            // Bouton pour effectuer la déconnexion
+    private Button changePasswordButton;    // Bouton pour changer le mot de passe
+    private Button logoutButton;            // Bouton pour se déconnecter
 
-    // ----- Gestion de la session et des informations utilisateur -----
+    // Gestion de la session et de l’utilisateur
     private String userEmail;               // Email de l’administrateur actuellement connecté
     private SessionManager sessionManager;  // Instance du gestionnaire de session (pattern Singleton)
 
@@ -78,20 +78,16 @@ public class AdministratorHomeActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Ouvre l’écran de gestion des serveurs.
-     * Transmet l’adresse courriel de l’administrateur à la prochaine activité.
-     */
+    // Ouvre la page de gestion des serveurs
+    // Transmet l’adresse courriel de l’administrateur à la prochaine activité
     private void openManageWaiters() {
         Intent intent = new Intent(AdministratorHomeActivity.this, ManageWaitersActivity.class);
         intent.putExtra("USER_EMAIL", userEmail);
         startActivity(intent);
     }
 
-    /**
-     * Ouvre l’écran de modification du mot de passe.
-     * Transmet à la prochaine activité l’adresse courriel et le rôle de l’utilisateur.
-     */
+    // Ouvre la page de changement de mot de passe
+    // Passe l’email et le rôle "Administrator" à la prochaine activité
     private void openChangePassword() {
         Intent intent = new Intent(AdministratorHomeActivity.this, ChangePasswordActivity.class);
         intent.putExtra("USER_EMAIL", userEmail);
@@ -99,10 +95,7 @@ public class AdministratorHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * Déconnecte l’utilisateur actuel et retourne à l’écran de connexion.
-     * Cette méthode vide la session active et nettoie la pile d’activités.
-     */
+    // Déconnecte l’utilisateur actuel et retourne à la page de connexion
     private void logout() {
         // Termine la session courante
         sessionManager.logout();

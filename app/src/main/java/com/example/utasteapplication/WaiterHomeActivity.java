@@ -13,14 +13,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * Activité d'accueil pour le rôle Waiter (Serveur)
- * Affiche les fonctionnalités disponibles pour un serveur
- */
 public class WaiterHomeActivity extends AppCompatActivity {
 
-    // Déclaration des composants de l'interface utilisateur
-    private TextView welcomeText; // Texte de bienvenue affiché au serveur
+    // Éléments de l’interface utilisateur
+    private TextView welcomeText; // Message de bienvenue
     private Button changePasswordButton; // Bouton pour changer le mot de passe
     private Button logoutButton; // Bouton pour se déconnecter
 
@@ -68,10 +64,7 @@ public class WaiterHomeActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Méthode pour ouvrir l'activité de changement de mot de passe
-     * Transfère l'email et le rôle du serveur à la prochaine activité
-     */
+    // Ouvre l’écran de changement de mot de passe
     private void openChangePassword() {
         // Crée une intention pour naviguer vers l'activité de changement de mot de passe
         Intent intent = new Intent(WaiterHomeActivity.this, ChangePasswordActivity.class);
@@ -83,20 +76,14 @@ public class WaiterHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * Méthode pour déconnecter le serveur
-     * Efface la session et retourne à l'écran de connexion
-     */
+    // Déconnecte l’utilisateur et retourne à l’écran de connexion
     private void logout() {
-        // Déconnecte l'utilisateur en utilisant le gestionnaire de session
+        // Ferme la session active
         sessionManager.logout();
 
-        // Crée une intention pour retourner à l'écran de connexion
+        // Redirige vers la page de connexion et nettoie l’historique
         Intent intent = new Intent(WaiterHomeActivity.this, LoginActivity.class);
-        // Efface toutes les activités précédentes de la pile et démarre une nouvelle tâche
-        // Cela empêche le serveur de revenir en arrière après la déconnexion
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // Lance l'activité de connexion
         startActivity(intent);
         // Ferme l'activité actuelle
         finish();

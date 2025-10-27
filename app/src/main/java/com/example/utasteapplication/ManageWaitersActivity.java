@@ -13,13 +13,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
-/**
- * Activité de gestion des serveurs
- * Permet à l'administrateur d'ajouter de nouveaux serveurs au système
- */
+
 public class ManageWaitersActivity extends AppCompatActivity {
 
-    // Déclaration des composants de l'interface utilisateur
+    // Éléments de l’interface utilisateur
     private EditText waiterEmailInput; // Champ de saisie pour l'email du nouveau serveur
     private EditText waiterPasswordInput; // Champ de saisie pour le mot de passe du nouveau serveur
     private Button addWaiterButton; // Bouton pour ajouter un nouveau serveur
@@ -66,10 +63,7 @@ public class ManageWaitersActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Méthode pour gérer l'ajout d'un nouveau serveur
-     * Valide les informations saisies et crée un nouvel utilisateur avec le rôle "Waiter"
-     */
+    // Gère l’ajout d’un nouveau serveur
     private void handleAddWaiter() {
         // Récupère les valeurs saisies par l'administrateur et supprime les espaces
         String email = waiterEmailInput.getText().toString().trim();

@@ -55,10 +55,7 @@ public class AddEditRecipeActivity extends AppCompatActivity {
         boutonAnnuler.setOnClickListener(v -> finish());
     }
 
-    /**
-     * Charge les données d’une recette existante dans les champs d’édition.
-     * @param id Identifiant de la recette à charger.
-     */
+    // Charge les informations d’une recette existante dans les champs du formulaire
     private void chargerRecette(int id) {
         recetteActuelle = dbHelper.getRecipeById(id);
         if (recetteActuelle != null) {
@@ -68,10 +65,8 @@ public class AddEditRecipeActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Valide les champs et effectue soit l’ajout, soit la mise à jour d’une recette.
-     * Retourne l’ID de la recette ajoutée à l’activité précédente.
-     */
+    // Vérifie les champs et effectue l’ajout ou la mise à jour de la recette
+    // Retourne l’ID de la recette à l’activité précédente
     private void sauvegarderRecette() {
         String nom = nomEditText.getText().toString().trim();
         String description = descriptionEditText.getText().toString().trim();
@@ -93,7 +88,7 @@ public class AddEditRecipeActivity extends AppCompatActivity {
             return;
         }
 
-        // --- Mise à jour d’une recette existante ---
+        // Si on modifie une recette existante
         if (recetteId > 0 && recetteActuelle != null) {
             boolean miseAJour = dbHelper.updateRecipe(
                     recetteActuelle.getId(),
@@ -111,7 +106,7 @@ public class AddEditRecipeActivity extends AppCompatActivity {
             // Retour à la page précédente après mise à jour
             finish();
 
-            // --- Ajout d’une nouvelle recette ---
+            // Sinon, on ajoute une nouvelle recette
         } else {
             Recipe nouvelleRecette = new Recipe(nom, cheminImage, description);
             long nouvelId = dbHelper.addRecipe(nouvelleRecette);
@@ -119,7 +114,7 @@ public class AddEditRecipeActivity extends AppCompatActivity {
             if (nouvelId != -1) {
                 Toast.makeText(this, "Recette ajoutée avec succès.", Toast.LENGTH_SHORT).show();
 
-                // Retourne l’ID de la nouvelle recette à ManageRecipesActivity
+                // Renvoie l’ID de la nouvelle recette à ManageRecipesActivity
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("NEW_RECIPE_ID", (int) nouvelId); // Conversion sûre long → int
                 setResult(RESULT_OK, resultIntent);

@@ -1,11 +1,8 @@
 package com.example.utasteapplication;
 /*
- * Author: Othmane El Moutaouakkil
- */
-
-/**
- * Recipe Model Class
- * Represents a recipe with unique name, image, and description
+ * Auteur : Othmane El Moutaouakkil
+ * Classe représentant une recette dans l’application.
+ * Contient les informations essentielles : nom, image, description et dates.
  */
 public class Recipe {
     private int id;
@@ -25,15 +22,7 @@ public class Recipe {
         this.modifiedAt = null; // DB will set this
     }
 
-    /**
-     * Constructor for existing recipe (from database)
-     * @param id Database ID
-     * @param name Recipe name
-     * @param imagePath Path to image resource
-     * @param description Recipe description
-     * @param createdAt Creation timestamp
-     * @param modifiedAt Last modification timestamp
-     */
+    // Constructeur utilisé quand on charge une recette existante depuis la base
     public Recipe(int id, String name, String imagePath, String description,
                   String createdAt, String modifiedAt) {
         this.id = id;
