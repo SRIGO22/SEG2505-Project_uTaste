@@ -1,8 +1,11 @@
 package com.example.utasteapplication;
 
 /*
- * Author: Othmane El Moutaouakkil
- * Updated: Unified Add/Edit Ingredient handling + QR code scanning
+ * Auteur : Othmane El Moutaouakkil
+ * Description : Cette activité permet à l’utilisateur d’ajouter un nouvel ingrédient
+ *               ou de modifier un ingrédient existant. Elle inclut la possibilité
+ *               de scanner un code QR pour identifier rapidement un ingrédient.
+ * Dernière mise à jour : Unification du mode Ajout/Édition + ajout du scan QR
  */
 
 import android.content.Intent;
@@ -21,19 +24,20 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 public class AddEditIngredientActivity extends AppCompatActivity {
 
-    private EditText editTextName, editTextQrCode, editTextQuantity;
-    private Button buttonSave, buttonCancel, buttonScanQr;
+    // Éléments de l’interface utilisateur
+    private EditText nomInput, qrCodeInput, quantiteInput;
+    private Button boutonSauvegarder, boutonAnnuler, boutonScannerQr;
 
     private DatabaseHelper dbHelper;
-    private int recipeId;
-    private int ingredientId = -1; // Default: adding new ingredient
-    private RecipeIngredient ingredientToEdit;
+    private int recetteId;
+    private int ingredientId = -1; // Par défaut : on ajoute un ingrédient
+    private RecipeIngredient ingredientAModifier;
 
-    // QR code scanner launcher
+    // Lanceur du scanner de code QR et gestion du résultat
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
             registerForActivityResult(new ScanContract(), result -> {
-                if(result.getContents() != null) {
-                    editTextQrCode.setText(result.getContents());
+                if (result.getContents() != null) {
+                    qrCodeInput.setText(result.getContents());
                 }
             });
 
@@ -42,98 +46,102 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_ingredient);
 
-        // Initialize UI
-        editTextName = findViewById(R.id.editText_ingredient_name);
-        editTextQrCode = findViewById(R.id.editText_ingredient_qrcode);
-        editTextQuantity = findViewById(R.id.editText_ingredient_quantity);
-        buttonSave = findViewById(R.id.button_save_ingredient);
-        buttonCancel = findViewById(R.id.button_cancel_ingredient);
-        buttonScanQr = findViewById(R.id.button_scan_qr); // new button for scanning
+        // --- Initialisation des éléments de l’interface ---
+        nomInput = findViewById(R.id.editText_ingredient_name);
+        qrCodeInput = findViewById(R.id.editText_ingredient_qrcode);
+        quantiteInput = findViewById(R.id.editText_ingredient_quantity);
+        boutonSauvegarder = findViewById(R.id.button_save_ingredient);
+        boutonAnnuler = findViewById(R.id.button_cancel_ingredient);
+        boutonScannerQr = findViewById(R.id.button_scan_qr);
 
         dbHelper = DatabaseHelper.getInstance(this);
 
-        // Get recipe ID and ingredient ID from intent
-        recipeId = getIntent().getIntExtra("RECIPE_ID", -1);
+        // Récupération des identifiants transmis depuis l’activité précédente
+        recetteId = getIntent().getIntExtra("RECIPE_ID", -1);
         ingredientId = getIntent().getIntExtra("INGREDIENT_ID", -1);
 
-        // If editing, load ingredient data
+        // Si on modifie un ingrédient existant, on pré-remplit les champs
         if (ingredientId != -1) {
-            ingredientToEdit = dbHelper.getIngredientById(ingredientId);
-            if (ingredientToEdit != null) {
-                editTextName.setText(ingredientToEdit.getName());
-                editTextQrCode.setText(ingredientToEdit.getQrCode());
-                editTextQuantity.setText(String.valueOf(ingredientToEdit.getQuantityPercentage()));
+            ingredientAModifier = dbHelper.getIngredientById(ingredientId);
+            if (ingredientAModifier != null) {
+                nomInput.setText(ingredientAModifier.getName());
+                qrCodeInput.setText(ingredientAModifier.getQrCode());
+                quantiteInput.setText(String.valueOf(ingredientAModifier.getQuantityPercentage()));
             }
         }
 
-        // Save button listener
-        buttonSave.setOnClickListener(v -> saveIngredient());
+        // Écouteurs des boutons
+        boutonSauvegarder.setOnClickListener(v -> sauvegarderIngredient());
+        boutonAnnuler.setOnClickListener(v -> finish());
 
-        // Cancel button listener
-        buttonCancel.setOnClickListener(v -> finish());
-
-        // QR code scanner button
-        buttonScanQr.setOnClickListener(v -> {
+        // Activation du scanner QR
+        boutonScannerQr.setOnClickListener(v -> {
             ScanOptions options = new ScanOptions();
-            options.setPrompt("Scan the ingredient QR code");
+            options.setPrompt("Scannez le code QR de l’ingrédient");
             options.setBeepEnabled(true);
             options.setOrientationLocked(true);
             barcodeLauncher.launch(options);
         });
     }
 
-    private void saveIngredient() {
-        String name = editTextName.getText().toString().trim();
-        String qrCode = editTextQrCode.getText().toString().trim();
-        String quantityStr = editTextQuantity.getText().toString().trim();
+    /**
+     * Gère à la fois l’ajout et la modification d’un ingrédient.
+     * Vérifie la validité des champs avant de sauvegarder dans la base de données.
+     */
+    private void sauvegarderIngredient() {
+        String nom = nomInput.getText().toString().trim();
+        String qrCode = qrCodeInput.getText().toString().trim();
+        String quantiteStr = quantiteInput.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(qrCode) || TextUtils.isEmpty(quantityStr)) {
-            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+        // Vérification des champs vides
+        if (TextUtils.isEmpty(nom) || TextUtils.isEmpty(qrCode) || TextUtils.isEmpty(quantiteStr)) {
+            Toast.makeText(this, "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        double quantity;
+        double quantite;
         try {
-            quantity = Double.parseDouble(quantityStr);
+            quantite = Double.parseDouble(quantiteStr);
         } catch (NumberFormatException e) {
-            Toast.makeText(this, "Invalid quantity", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Veuillez entrer une quantité valide.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (quantity <= 0 || quantity > 100) {
-            Toast.makeText(this, "Quantity must be between 0 and 100", Toast.LENGTH_SHORT).show();
+        if (quantite <= 0 || quantite > 100) {
+            Toast.makeText(this, "La quantité doit être comprise entre 0 et 100.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (ingredientId != -1 && ingredientToEdit != null) {
-            // Update existing ingredient
-            ingredientToEdit.setName(name);
-            ingredientToEdit.setQrCode(qrCode);
-            ingredientToEdit.setQuantityPercentage(quantity);
+        // --- Mode Édition ---
+        if (ingredientId != -1 && ingredientAModifier != null) {
+            ingredientAModifier.setName(nom);
+            ingredientAModifier.setQrCode(qrCode);
+            ingredientAModifier.setQuantityPercentage(quantite);
 
-            boolean updated = dbHelper.updateIngredient(
-                    ingredientToEdit.getId(),
-                    ingredientToEdit.getQrCode(),
-                    ingredientToEdit.getName(),
-                    ingredientToEdit.getQuantityPercentage()
+            boolean misAJour = dbHelper.updateIngredient(
+                    ingredientAModifier.getId(),
+                    ingredientAModifier.getQrCode(),
+                    ingredientAModifier.getName(),
+                    ingredientAModifier.getQuantityPercentage()
             );
 
-            if (updated) {
-                Toast.makeText(this, "Ingredient updated", Toast.LENGTH_SHORT).show();
+            if (misAJour) {
+                Toast.makeText(this, "Ingrédient mis à jour avec succès.", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(this, "Failed to update ingredient", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Échec de la mise à jour de l’ingrédient.", Toast.LENGTH_SHORT).show();
             }
-        } else {
-            // Add new ingredient
-            RecipeIngredient newIngredient = new RecipeIngredient(recipeId, qrCode, name, quantity);
-            long result = dbHelper.addIngredient(newIngredient);
 
-            if (result != -1) {
-                Toast.makeText(this, "Ingredient added", Toast.LENGTH_SHORT).show();
+            // --- Mode Ajout ---
+        } else {
+            RecipeIngredient nouvelIngredient = new RecipeIngredient(recetteId, qrCode, nom, quantite);
+            long resultat = dbHelper.addIngredient(nouvelIngredient);
+
+            if (resultat != -1) {
+                Toast.makeText(this, "Ingrédient ajouté avec succès.", Toast.LENGTH_SHORT).show();
                 finish();
             } else {
-                Toast.makeText(this, "Failed to add ingredient", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Échec de l’ajout de l’ingrédient.", Toast.LENGTH_SHORT).show();
             }
         }
     }
