@@ -16,59 +16,61 @@ L’application doit :
 
 Ce projet vise à développer des compétences en génie logiciel : modélisation, conception, programmation, tests, documentation et travail en équipe.\
 
-### Supported Roles
-- **Administrator**: Manages users, resets passwords, and resets the database.
-- **Chef**: Creates and manages recipes and ingredients.
-- **Waiter**: Views recipes and records sales (to be implemented in Deliverable 3).
-
-## Setup & Reconstruction Instructions
-
-### Requirements
-- Android Studio (latest stable version)
-- Minimum SDK: API 26 (Android 8.0 Oreo)
-- SQLite (bundled with Android)
-- Emulator or physical Android device
-
-### How to Run
-1. Clone the repository and checkout the tag `deliverable-2`.
-2. Open the project in Android Studio.
-3. Build and run the app on an emulator or device.
-4. Log in using one of the default accounts:
-   - Administrator: `admin@utaste.com` / `admin123`
-   - Chef: `chef@utaste.com` / `chef123`
-   - Waiter: `waiter@utaste.com` / `waiter123`
+### Rôles pris en charge
+- **Administrateur** : Gère les utilisateurs, réinitialise les mots de passe et la base de données.
+- **Chef** : Crée et gère les recettes et les ingrédients.
+- **Serveur** : Consulte les recettes et enregistre les ventes (à implémenter dans le livrable 3).
 
 ---
 
-## Validation Scenario
+## Instructions d’installation et de reconstruction
 
-### Administrator
-- Log in and access the admin dashboard.
-- Add a new Waiter with a valid email and password.
-- Reset any user's password to default.
-- Edit a user's profile (first name, last name).
-- Reset the database to its initial state.
+### Prérequis
+- Android Studio (version stable la plus récente)
+- SDK minimum : API 26 (Android 8.0 Oreo)
+- SQLite (intégré à Android)
+- Émulateur ou appareil Android physique
+
+### Comment exécuter l’application
+1. Cloner le dépôt et se positionner sur le tag `deliverable-2`.
+2. Ouvrir le projet dans Android Studio.
+3. Compiler et exécuter l’application sur un émulateur ou un appareil.
+4. Se connecter avec l’un des comptes par défaut :
+   - Administrateur : `admin@utaste.com` / `admin123`
+   - Chef : `chef@utaste.com` / `chef123`
+   - Serveur : `waiter@utaste.com` / `waiter123`
+
+---
+
+## Scénario de validation
+
+### Administrateur
+- Se connecter et accéder au tableau de bord administrateur.
+- Ajouter un nouveau serveur avec un email et mot de passe valides.
+- Réinitialiser le mot de passe de n’importe quel utilisateur.
+- Modifier le profil d’un utilisateur (prénom, nom).
+- Réinitialiser la base de données à son état initial.
 
 ### Chef
-- Log in and access the chef dashboard.
-- Create a new recipe with:
-  - Unique name
-  - Image from local bank
+- Se connecter et accéder au tableau de bord chef.
+- Créer une nouvelle recette avec :
+  - Nom unique
+  - Image depuis la banque locale
   - Description
-- Add ingredients by:
-  - Scanning a QR code
-  - Entering a title and quantity percentage
-- Modify or delete ingredients.
-- Modify or delete recipes.
+- Ajouter des ingrédients via :
+  - Scan d’un code QR
+  - Saisie d’un titre et d’un pourcentage de quantité
+- Modifier ou supprimer des ingrédients.
+- Modifier ou supprimer des recettes.
 
 ---
 
-## Known Limitations
+## Limitations connues
 
-- QR code scanning is mocked; full camera integration is pending.
-- Nutrition API integration (OpenFoodFacts) is planned for Deliverable 3.
-- 
+- Le scan de code QR est simulé ; l’intégration complète de la caméra est prévue.
+- L’intégration de l’API nutritionnelle (OpenFoodFacts) est prévue pour le livrable 3.
 
 ---
+
 
 
