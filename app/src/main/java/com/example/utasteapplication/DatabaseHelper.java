@@ -148,7 +148,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // --- Omelette Recipe ---
         ContentValues omelette = new ContentValues();
         omelette.put(COL_RECIPE_NAME, "Omelette");
-        omelette.put(COL_RECIPE_IMAGE, "omelette.jpg");
+        omelette.put(COL_RECIPE_IMAGE, "https://www.olivetomato.com/wp-content/uploads/2016/02/SAM4952-1.jpg");
         omelette.put(COL_RECIPE_DESCRIPTION, "Simple omelette with eggs, salt, and pepper.");
         omelette.put(COL_RECIPE_CREATED_AT, timestamp);
         omelette.put(COL_RECIPE_MODIFIED_AT, timestamp);
@@ -236,13 +236,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Recipe mapRecipe(Cursor cursor) {
+        int idIndex = cursor.getColumnIndexOrThrow(COL_RECIPE_ID);
+        int nameIndex = cursor.getColumnIndexOrThrow(COL_RECIPE_NAME);
+        int imageIndex = cursor.getColumnIndexOrThrow(COL_RECIPE_IMAGE);
+        int descIndex = cursor.getColumnIndexOrThrow(COL_RECIPE_DESCRIPTION);
+        int createdIndex = cursor.getColumnIndexOrThrow(COL_RECIPE_CREATED_AT);
+        int modifiedIndex = cursor.getColumnIndexOrThrow(COL_RECIPE_MODIFIED_AT);
+        
         return new Recipe(
-                cursor.getInt(cursor.getColumnIndexOrThrow(COL_RECIPE_ID)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_RECIPE_NAME)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_RECIPE_IMAGE)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_RECIPE_DESCRIPTION)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_RECIPE_CREATED_AT)),
-                cursor.getString(cursor.getColumnIndexOrThrow(COL_RECIPE_MODIFIED_AT))
+                cursor.getInt(idIndex),
+                cursor.isNull(nameIndex) ? "" : cursor.getString(nameIndex),
+                cursor.isNull(imageIndex) ? "" : cursor.getString(imageIndex),
+                cursor.isNull(descIndex) ? "" : cursor.getString(descIndex),
+                cursor.isNull(createdIndex) ? "" : cursor.getString(createdIndex),
+                cursor.isNull(modifiedIndex) ? "" : cursor.getString(modifiedIndex)
         );
     }
 

@@ -15,7 +15,7 @@
             android:id="@+id/recipe_imageview"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="centerCrop"
+            android:scaleType="fitCenter"
             android:contentDescription="Recipe Image"
             android:src="@drawable/ic_recipe_placeholder"
             android:layout_marginBottom="16dp"/>

@@ -5,6 +5,7 @@ package com.example.utasteapplication;
  */
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -49,10 +50,58 @@ public class RecipeDetailsActivity extends AppCompatActivity {
 
         // Load image if available
         String imagePath = recipe.getImagePath();
+        Log.d("RecipeDetails", "Recipe loaded - Name: " + recipe.getName());
+        Log.d("RecipeDetails", "Image path from database: [" + imagePath + "]");
+        Log.d("RecipeDetails", "Image path null? " + (imagePath == null));
+        
         if (imagePath != null && !imagePath.isEmpty()) {
-            recipeImageView.setImageURI(android.net.Uri.parse(imagePath));
+            boolean imageLoaded = false;
+            
+            // First try: Load as drawable resource (for local images)
+            int imageResourceId = getResources().getIdentifier(
+                imagePath, 
+                "drawable", 
+                getPackageName()
+            );
+            
+            if (imageResourceId != 0) {
+                // Found as drawable resource
+                Log.d("RecipeDetails", "Found drawable resource: " + imageResourceId);
+                recipeImageView.setImageResource(imageResourceId);
+                imageLoaded = true;
+            } else if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+                Log.d("RecipeDetails", "Image is a URL, but URL loading not implemented");
+                Toast.makeText(this, "URL images not supported yet. Use drawable resources.", Toast.LENGTH_SHORT).show();
+                recipeImageView.setImageResource(R.drawable.ic_recipe_placeholder);
+            } else if (imagePath.startsWith("content://") || imagePath.startsWith("file://")) {
+                // Local URI
+                try {
+                    Log.d("RecipeDetails", "Loading from URI: " + imagePath);
+                    recipeImageView.setImageURI(android.net.Uri.parse(imagePath));
+                    imageLoaded = true;
+                } catch (Exception e) {
+                    Log.e("RecipeDetails", "Error loading URI: " + e.getMessage());
+                    recipeImageView.setImageResource(R.drawable.ic_recipe_placeholder);
+                }
+            } else {
+                // Try as file path
+                try {
+                    android.net.Uri uri = android.net.Uri.parse("file://" + imagePath);
+                    recipeImageView.setImageURI(uri);
+                    imageLoaded = true;
+                } catch (Exception e) {
+                    Log.e("RecipeDetails", "Error loading file path: " + e.getMessage());
+                }
+            }
+            
+            if (!imageLoaded) {
+                // If nothing worked, use placeholder
+                Log.d("RecipeDetails", "Using placeholder image");
+                recipeImageView.setImageResource(R.drawable.ic_recipe_placeholder);
+            }
         } else {
-            recipeImageView.setImageResource(R.drawable.ic_recipe_placeholder); // default placeholder
+            Log.d("RecipeDetails", "No image path, using placeholder");
+            recipeImageView.setImageResource(R.drawable.ic_recipe_placeholder);
         }
 
         // Load ingredients
