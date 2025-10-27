@@ -2,12 +2,25 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <!-- Header -->
+        <TextView
+            android:id="@+id/tvIngredientHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Manage Ingredient"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Ingredient Name -->
         <TextView
@@ -56,21 +69,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="end"
+            android:gravity="center_horizontal"
             android:layout_marginTop="24dp">
 
             <Button
                 android:id="@+id/button_cancel_ingredient"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Cancel"/>
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:backgroundTint="@color/secondary"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"/>
 
             <Button
                 android:id="@+id/button_save_ingredient"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Save"
-                android:layout_marginStart="16dp"/>
+                android:backgroundTint="@color/primary"
+                android:textColor="@android:color/white"
+                android:layout_marginStart="8dp"/>
         </LinearLayout>
 
     </LinearLayout>
