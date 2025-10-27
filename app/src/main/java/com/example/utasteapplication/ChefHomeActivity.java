@@ -10,7 +10,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.utasteapplication.DatabaseHelper;
+import com.example.utasteapplication.Recipe;
+import java.util.List;
 
 /**
  * Home activity for Chef
@@ -74,12 +78,39 @@ public class ChefHomeActivity extends AppCompatActivity {
 
     /**
      * Open ManageIngredientsActivity
-     * Since ingredients are managed per recipe, navigate to ManageRecipes first
+     * Shows a dialog to select a recipe first, since ingredients are managed per recipe
      */
     private void openManageIngredients() {
-        // Navigate to Manage Recipes where user can select a recipe to manage ingredients
-        Intent intent = new Intent(ChefHomeActivity.this, ManageRecipesActivity.class);
-        startActivity(intent);
+        DatabaseHelper db = DatabaseHelper.getInstance(this);
+        List<Recipe> recipes = db.getAllRecipes();
+        
+        if (recipes.isEmpty()) {
+            // No recipes available
+            new AlertDialog.Builder(this)
+                    .setTitle("No Recipes")
+                    .setMessage("Please create a recipe first before managing ingredients.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+        
+        // Create a dialog to select a recipe
+        String[] recipeNames = new String[recipes.size()];
+        for (int i = 0; i < recipes.size(); i++) {
+            recipeNames[i] = recipes.get(i).getName();
+        }
+        
+        new AlertDialog.Builder(this)
+                .setTitle("Select Recipe")
+                .setItems(recipeNames, (dialog, which) -> {
+                    Recipe selectedRecipe = recipes.get(which);
+                    Intent intent = new Intent(ChefHomeActivity.this, ManageIngredientsActivity.class);
+                    intent.putExtra("RECIPE_ID", selectedRecipe.getId());
+                    intent.putExtra("RECIPE_NAME", selectedRecipe.getName());
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     /**

@@ -2,26 +2,40 @@ package com.example.utasteapplication;
 
 /*
  * Author: Othmane El Moutaouakkil
- * Updated: Unified Add/Edit Ingredient handling
+ * Updated: Unified Add/Edit Ingredient handling + QR code scanning
  */
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 public class AddEditIngredientActivity extends AppCompatActivity {
 
     private EditText editTextName, editTextQrCode, editTextQuantity;
-    private Button buttonSave, buttonCancel;
+    private Button buttonSave, buttonCancel, buttonScanQr;
 
     private DatabaseHelper dbHelper;
     private int recipeId;
     private int ingredientId = -1; // Default: adding new ingredient
     private RecipeIngredient ingredientToEdit;
+
+    // QR code scanner launcher
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher =
+            registerForActivityResult(new ScanContract(), result -> {
+                if(result.getContents() != null) {
+                    editTextQrCode.setText(result.getContents());
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +48,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
         editTextQuantity = findViewById(R.id.editText_ingredient_quantity);
         buttonSave = findViewById(R.id.button_save_ingredient);
         buttonCancel = findViewById(R.id.button_cancel_ingredient);
+        buttonScanQr = findViewById(R.id.button_scan_qr); // new button for scanning
 
         dbHelper = DatabaseHelper.getInstance(this);
 
@@ -56,6 +71,15 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
         // Cancel button listener
         buttonCancel.setOnClickListener(v -> finish());
+
+        // QR code scanner button
+        buttonScanQr.setOnClickListener(v -> {
+            ScanOptions options = new ScanOptions();
+            options.setPrompt("Scan the ingredient QR code");
+            options.setBeepEnabled(true);
+            options.setOrientationLocked(true);
+            barcodeLauncher.launch(options);
+        });
     }
 
     private void saveIngredient() {

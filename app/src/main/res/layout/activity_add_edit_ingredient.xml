@@ -15,7 +15,7 @@
             android:id="@+id/tvIngredientHeader"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manage Ingredient"
+            android:text="Add / Edit Ingredient"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/primary"
@@ -34,7 +34,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter ingredient name"
-            android:inputType="textPersonName"/>
+            android:inputType="textPersonName"
+            android:padding="8dp"/>
 
         <!-- QR Code -->
         <TextView
@@ -43,12 +44,29 @@
             android:text="QR Code"
             android:textSize="16sp"
             android:layout_marginTop="16dp"/>
-        <EditText
-            android:id="@+id/editText_ingredient_qrcode"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Scan or enter QR code"
-            android:inputType="text"/>
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/editText_ingredient_qrcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Scan or enter QR code"
+                android:inputType="text"
+                android:padding="8dp"/>
+
+            <Button
+                android:id="@+id/button_scan_qr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/primary"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
 
         <!-- Quantity Percentage -->
         <TextView
@@ -62,7 +80,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter quantity percentage"
-            android:inputType="numberDecimal"/>
+            android:inputType="numberDecimal"
+            android:padding="8dp"/>
 
         <!-- Buttons -->
         <LinearLayout
