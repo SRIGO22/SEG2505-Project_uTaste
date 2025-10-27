@@ -1,9 +1,11 @@
 package com.example.utasteapplication;
 
 /**
- * Author: Othmane El Moutaouakkil
- * Change Password Activity
- * Updated to use Singleton pattern
+ * Auteur : Othmane El Moutaouakkil
+ * Activité : Changement de mot de passe
+ * Cette activité permet à un utilisateur de modifier son mot de passe
+ * en vérifiant son mot de passe actuel et en enregistrant le nouveau.
+ * Elle utilise le pattern Singleton pour la gestion des utilisateurs.
  */
 
 import android.os.Bundle;
@@ -15,119 +17,114 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ChangePasswordActivity extends AppCompatActivity {
 
-    // Déclaration des champs de saisie pour les mots de passe
-    private EditText currentPasswordInput; // Champ pour entrer le mot de passe actuel
-    private EditText newPasswordInput; // Champ pour entrer le nouveau mot de passe
-    private EditText confirmPasswordInput; // Champ pour confirmer le nouveau mot de passe
+    // === Composants de l’interface ===
+    private EditText currentPasswordInput;   // Champ pour entrer le mot de passe actuel
+    private EditText newPasswordInput;       // Champ pour entrer le nouveau mot de passe
+    private EditText confirmPasswordInput;   // Champ pour confirmer le nouveau mot de passe
 
-    // Déclaration des boutons
-    private Button savePasswordButton; // Bouton pour sauvegarder le nouveau mot de passe
-    private Button cancelButton; // Bouton pour annuler et retourner à l'écran précédent
+    private Button savePasswordButton;       // Bouton pour sauvegarder le nouveau mot de passe
+    private Button cancelButton;             // Bouton pour annuler et revenir à l’écran précédent
 
-    // Variables pour stocker les informations de l'utilisateur
-    private String userEmail; // Email de l'utilisateur qui change son mot de passe
-    private String userRole; // Rôle de l'utilisateur (Administrator, Chef, Waiter)
-    private UserManager userManager; // Gestionnaire des utilisateurs (pattern Singleton)
+    // === Informations de l’utilisateur ===
+    private String userEmail;                // Adresse courriel de l’utilisateur
+    private String userRole;                 // Rôle de l’utilisateur (Administrator, Chef, Waiter)
+    private UserManager userManager;         // Gestionnaire des utilisateurs (implémenté en Singleton)
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Associe l'activité avec le fichier de mise en page XML
+        // Lie l’activité à son interface XML
         setContentView(R.layout.activity_change_password);
 
-        // Récupère les détails de l'utilisateur passés depuis l'activité précédente
+        // Récupère les informations envoyées depuis l’activité précédente
         userEmail = getIntent().getStringExtra("USER_EMAIL");
         userRole = getIntent().getStringExtra("USER_ROLE");
 
-        // Récupère l'instance unique du gestionnaire d'utilisateurs (pattern Singleton)
+        // Obtient l’unique instance du gestionnaire d’utilisateurs
         userManager = UserManager.getInstance();
 
-        // Initialise les composants de l'interface en les liant avec les éléments du layout XML
+        // Lie les éléments XML aux variables Java
         currentPasswordInput = findViewById(R.id.current_password_input);
         newPasswordInput = findViewById(R.id.new_password_input);
         confirmPasswordInput = findViewById(R.id.confirm_password_input);
         savePasswordButton = findViewById(R.id.save_password_button);
         cancelButton = findViewById(R.id.cancel_button);
 
-        // Configure le comportement du bouton "Sauvegarder"
+        // Lorsqu’on clique sur “Sauvegarder”, on tente de changer le mot de passe
         savePasswordButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Traite la demande de changement de mot de passe
                 handleChangePassword();
             }
         });
 
-        // Configure le comportement du bouton "Annuler"
+        // Lorsqu’on clique sur “Annuler”, on ferme simplement l’écran actuel
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Ferme l'activité et retourne à l'écran précédent
                 finish();
             }
         });
     }
 
     /**
-     * Méthode pour gérer le processus de changement de mot de passe
-     * Valide les entrées et met à jour le mot de passe si tout est correct
+     * Gère le processus complet de changement de mot de passe :
+     * 1️ Vérifie que les champs sont remplis.
+     * 2️ Compare les nouveaux mots de passe.
+     * 3️ Valide la longueur du nouveau mot de passe.
+     * 4️ Authentifie l’utilisateur.
+     * 5️ Enregistre le nouveau mot de passe s’il est valide.
      */
     private void handleChangePassword() {
-        // Récupère les valeurs saisies par l'utilisateur et supprime les espaces
+
+        // Récupère les valeurs entrées et enlève les espaces
         String currentPassword = currentPasswordInput.getText().toString().trim();
         String newPassword = newPasswordInput.getText().toString().trim();
         String confirmPassword = confirmPasswordInput.getText().toString().trim();
 
-        // Validation 1 : Vérifie que tous les champs sont remplis
+        // Étape 1 : Tous les champs doivent être remplis
         if (currentPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
-            // Affiche un message d'erreur si un champ est vide
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-            return; // Arrête l'exécution de la méthode
+            Toast.makeText(this, "Veuillez remplir tous les champs.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Validation 2 : Vérifie que le nouveau mot de passe et la confirmation correspondent
+        // Étape 2 : Vérifie que le nouveau mot de passe est bien confirmé
         if (!newPassword.equals(confirmPassword)) {
-            // Affiche un message d'erreur si les mots de passe ne correspondent pas
-            Toast.makeText(this, "New passwords do not match", Toast.LENGTH_SHORT).show();
-            return; // Arrête l'exécution de la méthode
+            Toast.makeText(this, "Les nouveaux mots de passe ne correspondent pas.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Validation 3 : Vérifie que le nouveau mot de passe a au moins 6 caractères
+        // Étape 3 : Vérifie la longueur minimale du mot de passe
         if (newPassword.length() < 6) {
-            // Affiche un message d'erreur si le mot de passe est trop court
-            Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
-            return; // Arrête l'exécution de la méthode
+            Toast.makeText(this, "Le mot de passe doit contenir au moins 6 caractères.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Recherche l'utilisateur dans la base de données en utilisant son email
+        // Étape 4 : Recherche l’utilisateur à partir de son courriel
         User user = userManager.findUser(userEmail);
 
-        // Vérifie si l'utilisateur existe dans le système
+        // Vérifie que l’utilisateur existe dans la base de données
         if (user == null) {
-            // Affiche un message d'erreur si l'utilisateur n'est pas trouvé
-            Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show();
-            return; // Arrête l'exécution de la méthode
+            Toast.makeText(this, "Utilisateur introuvable.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Authentifie l'utilisateur avec le mot de passe actuel saisi
+        // Étape 5 : Authentifie le mot de passe actuel avant de modifier
         if (!user.authenticate(currentPassword)) {
-            // Affiche un message d'erreur si le mot de passe actuel est incorrect
-            Toast.makeText(this, "Current password is incorrect", Toast.LENGTH_SHORT).show();
-            return; // Arrête l'exécution de la méthode
+            Toast.makeText(this, "Le mot de passe actuel est incorrect.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        // Si toutes les validations passent, change le mot de passe de l'utilisateur
+        // Tout est valide → on change le mot de passe
         user.changePassword(newPassword);
+        Toast.makeText(this, "Mot de passe modifié avec succès!", Toast.LENGTH_LONG).show();
 
-        // Affiche un message de confirmation du changement réussi
-        Toast.makeText(this, "Password changed successfully!", Toast.LENGTH_LONG).show();
-
-        // Efface tous les champs de saisie pour la sécurité
+        // Par sécurité, on efface les champs de saisie
         currentPasswordInput.setText("");
         newPasswordInput.setText("");
         confirmPasswordInput.setText("");
 
-        // Ferme l'activité et retourne à l'écran précédent
+        // Retourne à l’écran précédent
         finish();
     }
 }

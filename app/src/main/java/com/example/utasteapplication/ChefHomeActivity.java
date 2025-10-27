@@ -3,102 +3,141 @@ package com.example.utasteapplication;
 /**
  * Author: Othmane El Moutaouakkil
  * Chef Home Activity
- * Updated to use SessionManager
+ * Updated to use SessionManager and integrate recipe management
  */
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.utasteapplication.DatabaseHelper;
+import com.example.utasteapplication.Recipe;
+import java.util.List;
 
 /**
- * Activité d'accueil pour le rôle Chef
- * Affiche les fonctionnalités disponibles pour un chef cuisinier
+ * Home activity for Chef
+ * Shows options: Manage Recipes, Change Password, Logout
  */
 public class ChefHomeActivity extends AppCompatActivity {
 
-    // Déclaration des composants de l'interface utilisateur
-    private TextView welcomeText; // Texte de bienvenue affiché au chef
-    private Button changePasswordButton; // Bouton pour changer le mot de passe
-    private Button logoutButton; // Bouton pour se déconnecter
+    // UI components
+    private TextView welcomeText;
+    private Button manageRecipesButton;
+    private Button manageIngredientsButton;
+    private Button changePasswordButton;
+    private Button logoutButton;
 
-    // Variables pour gérer la session et l'utilisateur
-    private String userEmail; // Email du chef actuellement connecté
-    private SessionManager sessionManager; // Gestionnaire de session pour suivre l'utilisateur connecté
+    // Session manager to track logged-in user
+    private SessionManager sessionManager;
+    private String userEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Associe l'activité avec le fichier de mise en page XML pour le chef
         setContentView(R.layout.activity_chef_home);
 
-        // Récupère l'instance unique du gestionnaire de session (pattern Singleton)
+        // Initialize session manager
         sessionManager = SessionManager.getInstance();
 
-        // Récupère l'email du chef passé depuis l'activité de connexion
-        userEmail = getIntent().getStringExtra("USER_EMAIL");
+        // Check if user is logged in
+        if (!sessionManager.isLoggedIn()) {
+            redirectToLogin();
+            return;
+        }
 
-        // Initialise les composants de l'interface en les liant avec les éléments du layout XML
+        // Get currently logged-in user email safely
+        User currentUser = sessionManager.getCurrentUser();
+        userEmail = currentUser != null ? currentUser.getEmail() : "";
+
+        // Bind UI components
         welcomeText = findViewById(R.id.welcome_text);
+        manageRecipesButton = findViewById(R.id.manage_recipes_button);
+        manageIngredientsButton = findViewById(R.id.manage_ingredients_button);
         changePasswordButton = findViewById(R.id.change_password_button);
         logoutButton = findViewById(R.id.logout_button);
 
-        // Affiche un message de bienvenue personnalisé pour le chef
-        // Utilise une ressource string pour permettre la localisation
+        // Set welcome message
         welcomeText.setText(getString(R.string.welcome_message, "Chef"));
 
-        // Configure le comportement du bouton "Changer le mot de passe"
-        changePasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Ouvre l'écran de changement de mot de passe
-                openChangePassword();
-            }
-        });
-
-        // Configure le comportement du bouton "Déconnexion"
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Déconnecte le chef et retourne à l'écran de connexion
-                logout();
-            }
-        });
+        // Button listeners
+        manageRecipesButton.setOnClickListener(v -> openManageRecipes());
+        manageIngredientsButton.setOnClickListener(v -> openManageIngredients());
+        changePasswordButton.setOnClickListener(v -> openChangePassword());
+        logoutButton.setOnClickListener(v -> logout());
     }
 
     /**
-     * Méthode pour ouvrir l'activité de changement de mot de passe
-     * Transfère l'email et le rôle du chef à la prochaine activité
+     * Open ManageRecipesActivity
+     */
+    private void openManageRecipes() {
+        Intent intent = new Intent(ChefHomeActivity.this, ManageRecipesActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Open ManageIngredientsActivity
+     * Shows a dialog to select a recipe first, since ingredients are managed per recipe
+     */
+    private void openManageIngredients() {
+        DatabaseHelper db = DatabaseHelper.getInstance(this);
+        List<Recipe> recipes = db.getAllRecipes();
+        
+        if (recipes.isEmpty()) {
+            // No recipes available
+            new AlertDialog.Builder(this)
+                    .setTitle("No Recipes")
+                    .setMessage("Please create a recipe first before managing ingredients.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+        
+        // Create a dialog to select a recipe
+        String[] recipeNames = new String[recipes.size()];
+        for (int i = 0; i < recipes.size(); i++) {
+            recipeNames[i] = recipes.get(i).getName();
+        }
+        
+        new AlertDialog.Builder(this)
+                .setTitle("Select Recipe")
+                .setItems(recipeNames, (dialog, which) -> {
+                    Recipe selectedRecipe = recipes.get(which);
+                    Intent intent = new Intent(ChefHomeActivity.this, ManageIngredientsActivity.class);
+                    intent.putExtra("RECIPE_ID", selectedRecipe.getId());
+                    intent.putExtra("RECIPE_NAME", selectedRecipe.getName());
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    /**
+     * Open ChangePasswordActivity
      */
     private void openChangePassword() {
-        // Crée une intention pour naviguer vers l'activité de changement de mot de passe
         Intent intent = new Intent(ChefHomeActivity.this, ChangePasswordActivity.class);
-        // Passe l'email du chef à la prochaine activité
         intent.putExtra("USER_EMAIL", userEmail);
-        // Passe le rôle "Chef" à la prochaine activité
         intent.putExtra("USER_ROLE", "Chef");
-        // Lance la nouvelle activité
         startActivity(intent);
     }
 
     /**
-     * Méthode pour déconnecter le chef
-     * Efface la session et retourne à l'écran de connexion
+     * Logout user and clear session
      */
     private void logout() {
-        // Déconnecte l'utilisateur en utilisant le gestionnaire de session
         sessionManager.logout();
+        redirectToLogin();
+    }
 
-        // Crée une intention pour retourner à l'écran de connexion
+    /**
+     * Redirect to LoginActivity and clear activity stack
+     */
+    private void redirectToLogin() {
         Intent intent = new Intent(ChefHomeActivity.this, LoginActivity.class);
-        // Efface toutes les activités précédentes de la pile et démarre une nouvelle tâche
-        // Cela empêche le chef de revenir en arrière après la déconnexion
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        // Lance l'activité de connexion
         startActivity(intent);
-        // Ferme l'activité actuelle
         finish();
     }
 }
