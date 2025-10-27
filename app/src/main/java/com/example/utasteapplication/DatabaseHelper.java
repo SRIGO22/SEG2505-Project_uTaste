@@ -18,7 +18,7 @@ import java.util.Locale;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "utaste.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3; // bumped version
 
     // Users table
     private static final String TABLE_USERS = "users";
@@ -39,8 +39,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_RECIPE_DESCRIPTION = "description";
     private static final String COL_RECIPE_CREATED_AT = "created_at";
     private static final String COL_RECIPE_MODIFIED_AT = "modified_at";
+    private static final String COL_RECIPE_IS_DEFAULT = "is_default";
 
-    // Recipe Ingredients table
+    // Ingredients table
     private static final String TABLE_INGREDIENTS = "recipe_ingredients";
     private static final String COL_INGREDIENT_ID = "id";
     private static final String COL_INGREDIENT_RECIPE_ID = "recipe_id";
@@ -48,6 +49,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String COL_INGREDIENT_NAME = "name";
     private static final String COL_INGREDIENT_QUANTITY = "quantity_percentage";
     private static final String COL_INGREDIENT_ADDED_AT = "added_at";
+    private static final String COL_INGREDIENT_IS_DEFAULT = "is_default";
 
     private static DatabaseHelper instance;
 
@@ -88,7 +90,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_RECIPE_IMAGE + " TEXT, " +
                 COL_RECIPE_DESCRIPTION + " TEXT, " +
                 COL_RECIPE_CREATED_AT + " TEXT NOT NULL, " +
-                COL_RECIPE_MODIFIED_AT + " TEXT NOT NULL)");
+                COL_RECIPE_MODIFIED_AT + " TEXT NOT NULL, " +
+                COL_RECIPE_IS_DEFAULT + " INTEGER DEFAULT 0)");
 
         // Ingredients table
         db.execSQL("CREATE TABLE " + TABLE_INGREDIENTS + " (" +
@@ -98,10 +101,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_INGREDIENT_NAME + " TEXT NOT NULL, " +
                 COL_INGREDIENT_QUANTITY + " REAL NOT NULL, " +
                 COL_INGREDIENT_ADDED_AT + " TEXT NOT NULL, " +
+                COL_INGREDIENT_IS_DEFAULT + " INTEGER DEFAULT 0, " +
                 "FOREIGN KEY(" + COL_INGREDIENT_RECIPE_ID + ") REFERENCES " +
                 TABLE_RECIPES + "(" + COL_RECIPE_ID + ") ON DELETE CASCADE)");
 
         initializeDefaultUsers(db);
+        seedDefaultRecipes(db);
     }
 
     @Override
@@ -136,6 +141,61 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return sdf.format(new Date());
     }
 
+    // ==================== DEFAULT RECIPES ====================
+    private void seedDefaultRecipes(SQLiteDatabase db) {
+        String timestamp = getCurrentTimestamp();
+
+        // --- Omelette Recipe ---
+        ContentValues omelette = new ContentValues();
+        omelette.put(COL_RECIPE_NAME, "Omelette");
+        omelette.put(COL_RECIPE_IMAGE, "omelette.jpg");
+        omelette.put(COL_RECIPE_DESCRIPTION, "Simple omelette with eggs, salt, and pepper.");
+        omelette.put(COL_RECIPE_CREATED_AT, timestamp);
+        omelette.put(COL_RECIPE_MODIFIED_AT, timestamp);
+        omelette.put(COL_RECIPE_IS_DEFAULT, 1);
+        long omeletteId = db.insert(TABLE_RECIPES, null, omelette);
+
+        insertDefaultIngredient(db, "Eggs", "3 units", omeletteId);
+        insertDefaultIngredient(db, "Salt", "1 pinch", omeletteId);
+        insertDefaultIngredient(db, "Pepper", "1 pinch", omeletteId);
+
+        // --- Pancakes Recipe ---
+        ContentValues pancakes = new ContentValues();
+        pancakes.put(COL_RECIPE_NAME, "Pancakes");
+        pancakes.put(COL_RECIPE_IMAGE, "pancakes.jpg");
+        pancakes.put(COL_RECIPE_DESCRIPTION, "Fluffy pancakes made with flour, milk, and eggs.");
+        pancakes.put(COL_RECIPE_CREATED_AT, timestamp);
+        pancakes.put(COL_RECIPE_MODIFIED_AT, timestamp);
+        pancakes.put(COL_RECIPE_IS_DEFAULT, 1);
+        long pancakesId = db.insert(TABLE_RECIPES, null, pancakes);
+
+        insertDefaultIngredient(db, "Flour", "200 g", pancakesId);
+        insertDefaultIngredient(db, "Milk", "250 ml", pancakesId);
+        insertDefaultIngredient(db, "Eggs", "2 units", pancakesId);
+        insertDefaultIngredient(db, "Sugar", "2 tbsp", pancakesId);
+        insertDefaultIngredient(db, "Butter", "1 tbsp", pancakesId);
+    }
+
+    private void insertDefaultIngredient(SQLiteDatabase db, String name, String quantity, long recipeId) {
+        ContentValues ing = new ContentValues();
+        ing.put(COL_INGREDIENT_NAME, name);
+        ing.put(COL_INGREDIENT_QUANTITY, quantity);
+        ing.put(COL_INGREDIENT_RECIPE_ID, recipeId);
+        ing.put(COL_INGREDIENT_QR_CODE, name.toLowerCase().replace(" ", "_") + "_qr");
+        ing.put(COL_INGREDIENT_ADDED_AT, getCurrentTimestamp());
+        ing.put(COL_INGREDIENT_IS_DEFAULT, 1);
+        db.insert(TABLE_INGREDIENTS, null, ing);
+    }
+
+
+    // ==================== DELETE NON-DEFAULT RECIPES/INGREDIENTS ====================
+    public void deleteNonDefaultContent() {
+        SQLiteDatabase db = getWritableDatabase();
+        // Delete ingredients not marked as default
+        db.delete(TABLE_INGREDIENTS, COL_INGREDIENT_IS_DEFAULT + " = 0", null);
+        // Delete recipes not marked as default
+        db.delete(TABLE_RECIPES, COL_RECIPE_IS_DEFAULT + " = 0", null);
+    }
     // ==================== RECIPE OPERATIONS ====================
 
     public long addRecipe(Recipe recipe) {
