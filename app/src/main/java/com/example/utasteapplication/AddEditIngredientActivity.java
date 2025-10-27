@@ -2,20 +2,22 @@ package com.example.utasteapplication;
 
 /*
  * Author: Othmane El Moutaouakkil
+ * Updated: Unified Add/Edit Ingredient handling
  */
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddEditIngredientActivity extends AppCompatActivity {
 
     private EditText editTextName, editTextQrCode, editTextQuantity;
     private Button buttonSave, buttonCancel;
+
     private DatabaseHelper dbHelper;
     private int recipeId;
     private int ingredientId = -1; // Default: adding new ingredient
@@ -35,7 +37,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
 
         dbHelper = DatabaseHelper.getInstance(this);
 
-        // Get recipe ID from intent
+        // Get recipe ID and ingredient ID from intent
         recipeId = getIntent().getIntExtra("RECIPE_ID", -1);
         ingredientId = getIntent().getIntExtra("INGREDIENT_ID", -1);
 
@@ -49,10 +51,10 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             }
         }
 
-        // Save button
+        // Save button listener
         buttonSave.setOnClickListener(v -> saveIngredient());
 
-        // Cancel button
+        // Cancel button listener
         buttonCancel.setOnClickListener(v -> finish());
     }
 
@@ -84,6 +86,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             ingredientToEdit.setName(name);
             ingredientToEdit.setQrCode(qrCode);
             ingredientToEdit.setQuantityPercentage(quantity);
+
             boolean updated = dbHelper.updateIngredient(
                     ingredientToEdit.getId(),
                     ingredientToEdit.getQrCode(),
@@ -101,6 +104,7 @@ public class AddEditIngredientActivity extends AppCompatActivity {
             // Add new ingredient
             RecipeIngredient newIngredient = new RecipeIngredient(recipeId, qrCode, name, quantity);
             long result = dbHelper.addIngredient(newIngredient);
+
             if (result != -1) {
                 Toast.makeText(this, "Ingredient added", Toast.LENGTH_SHORT).show();
                 finish();
