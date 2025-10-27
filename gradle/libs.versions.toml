@@ -7,6 +7,8 @@ appcompat = "1.6.1"
 material = "1.11.0"
 activity = "1.9.3"
 constraintlayout = "2.1.4"
+zxing = "4.3.0"
+cardview = "1.0.0"
 
 [libraries]
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
@@ -16,6 +18,8 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+zxing = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxing" }
+cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
