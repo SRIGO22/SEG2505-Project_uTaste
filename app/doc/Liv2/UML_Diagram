@@ -1,0 +1,160 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' Interfaces
+interface Role {
+  +getRoleName(): String
+}
+
+' Abstract base class
+abstract class User {
+  - firstName: String
+  - lastName: String
+  - email: String
+  - password: String
+  - createdAt: String
+  - modifiedAt: String
+  + authenticate(pwd: String): boolean
+  + changePassword(newPwd: String): void
+  + updateProfile(fn: String, ln: String, email: String): void
+  + getEmail(): String
+  + getRole(): String
+}
+
+' Concrete user roles
+class Administrator {
+  + getRole(): String
+  + getRoleName(): String
+}
+
+class Chef {
+  + getRole(): String
+  + getRoleName(): String
+}
+
+class Waiter {
+  + getRole(): String
+  + getRoleName(): String
+}
+
+' Session classes
+class Session {
+  - user: User
+  - loginTime: String
+  + getUser(): User
+  + getLoginTime(): String
+  + logout(): void
+}
+
+class SessionManager {
+  - currentSession: Session
+  + getInstance(): SessionManager
+  + createSession(user: User): void
+  + getCurrentUser(): User
+  + isLoggedIn(): boolean
+  + logout(): void
+}
+
+' User management
+class UserManager {
+  - users: List<User>
+  + getInstance(): UserManager
+  + addUser(u: User): void
+  + removeUser(email: String): void
+  + findUser(email: String): User
+  + getAllUsers(): List<User>
+  + getAllWaiters(): List<Waiter>
+}
+
+' Recipe and ingredient models
+class Recipe {
+  - id: int
+  - name: String
+  - imagePath: String
+  - description: String
+  - createdAt: String
+  - modifiedAt: String
+  + isValid(): boolean
+  + toString(): String
+  + toDetailedString(): String
+}
+
+class RecipeIngredient {
+  - id: int
+  - recipeId: int
+  - qrCode: String
+  - name: String
+  - quantityPercentage: double
+  - addedAt: String
+  + isValid(): boolean
+  + toString(): String
+  + toDetailedString(): String
+}
+
+class Ingredient {
+  - id: int
+  - recipeId: int
+  - title: String
+  - qrCode: String
+  - quantityPercent: double
+  + isValid(): boolean
+  + toString(): String
+}
+
+' Services
+class AdminService {
+  - dbHelper: DatabaseHelper
+  + resetDatabase(): void
+  + resetPassword(email: String, defaultPwd: String): void
+  + updateUserProfile(email: String, fn: String, ln: String): void
+}
+
+class ChefService {
+  - dbHelper: DatabaseHelper
+  + createRecipe(recipe: Recipe): long
+  + updateRecipe(id: int, name: String, desc: String): int
+  + deleteRecipe(id: int): void
+  + addIngredient(ingredient: Ingredient): long
+  + updateIngredientQuantity(id: int, percent: double): int
+  + deleteIngredient(id: int): void
+}
+
+' Database
+class DatabaseHelper {
+  + getInstance(ctx: Context): DatabaseHelper
+  + addRecipe(recipe: Recipe): long
+  + getAllRecipes(): List<Recipe>
+  + getRecipeById(id: int): Recipe
+  + getRecipeByName(name: String): Recipe
+  + updateRecipe(...): boolean
+  + deleteRecipe(id: int): boolean
+  + addIngredient(ingredient: RecipeIngredient): long
+  + getIngredientsForRecipe(recipeId: int): List<RecipeIngredient>
+  + updateIngredient(...): boolean
+  + deleteIngredient(id: int): boolean
+  + resetDatabase(): void
+  + getDatabaseStats(): String
+}
+
+' Inheritance and implementation
+User <|-- Administrator
+User <|-- Chef
+User <|-- Waiter
+
+Administrator ..|> Role
+Chef ..|> Role
+Waiter ..|> Role
+
+' Associations
+Session --> User
+SessionManager --> Session
+UserManager --> User
+ChefService --> Recipe
+ChefService --> Ingredient
+AdminService --> User
+AdminService --> DatabaseHelper
+ChefService --> DatabaseHelper
+DatabaseHelper --> Recipe
+DatabaseHelper --> RecipeIngredient
+
+@enduml
