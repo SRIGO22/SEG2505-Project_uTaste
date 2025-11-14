@@ -1,19 +1,12 @@
 package com.example.utasteapplication;
 
-
 /*
  * Author: Othmane El Moutaouakkil
- */
-
-
-/**
- * ManageRecipesActivity - Chef can view, add, edit, delete recipes
+ * Updated: Prompt to add ingredients after adding a new recipe
  */
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,6 +16,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.List;
 
 public class ManageRecipesActivity extends AppCompatActivity {
+
+    private static final int REQUEST_ADD_RECIPE = 1001;
 
     private ListView recipesListView;
     private Button addRecipeButton;
@@ -38,36 +33,18 @@ public class ManageRecipesActivity extends AppCompatActivity {
 
         dbHelper = DatabaseHelper.getInstance(this);
 
-        // Initialize UI components
         recipesListView = findViewById(R.id.recipes_list_view);
         addRecipeButton = findViewById(R.id.add_recipe_button);
         backButton = findViewById(R.id.back_button);
 
-        // Load recipes
         loadRecipes();
 
-        // Set button listeners
-        addRecipeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openAddRecipe();
-            }
-        });
+        addRecipeButton.setOnClickListener(v -> openAddRecipe());
+        backButton.setOnClickListener(v -> finish());
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        // Set list item click listener
-        recipesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Recipe selectedRecipe = recipes.get(position);
-                showRecipeOptions(selectedRecipe);
-            }
+        recipesListView.setOnItemClickListener((parent, view, position, id) -> {
+            Recipe selectedRecipe = recipes.get(position);
+            showRecipeOptions(selectedRecipe);
         });
     }
 
@@ -78,47 +55,60 @@ public class ManageRecipesActivity extends AppCompatActivity {
     }
 
     private void openAddRecipe() {
-        Intent intent = new Intent(ManageRecipesActivity.this, AddEditRecipeActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(this, AddEditRecipeActivity.class);
+        startActivityForResult(intent, REQUEST_ADD_RECIPE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_ADD_RECIPE && resultCode == RESULT_OK && data != null) {
+            int newRecipeId = data.getIntExtra("NEW_RECIPE_ID", -1);
+            if (newRecipeId != -1) {
+                Toast.makeText(this, "Recipe added! Now add ingredients.", Toast.LENGTH_SHORT).show();
+                Recipe newRecipe = dbHelper.getRecipeById(newRecipeId);
+                if (newRecipe != null) {
+                    Intent intent = new Intent(this, ManageIngredientsActivity.class);
+                    intent.putExtra("RECIPE_ID", newRecipe.getId());
+                    intent.putExtra("RECIPE_NAME", newRecipe.getName());
+                    startActivity(intent);
+                }
+            }
+        }
+
+        // Reload the list to include new or updated recipes
+        loadRecipes();
     }
 
     private void showRecipeOptions(Recipe recipe) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(recipe.getName());
-        builder.setItems(new String[]{"View Details", "Edit Recipe", "Manage Ingredients", "Delete Recipe"},
-                (dialog, which) -> {
-                    switch (which) {
-                        case 0:
-                            viewRecipeDetails(recipe);
-                            break;
-                        case 1:
-                            editRecipe(recipe);
-                            break;
-                        case 2:
-                            manageIngredients(recipe);
-                            break;
-                        case 3:
-                            confirmDeleteRecipe(recipe);
-                            break;
-                    }
-                });
+        builder.setItems(new String[]{"View Details", "Edit Recipe", "Manage Ingredients", "Delete Recipe"}, (dialog, which) -> {
+            switch (which) {
+                case 0: viewRecipeDetails(recipe); break;
+                case 1: editRecipe(recipe); break;
+                case 2: manageIngredients(recipe); break;
+                case 3: confirmDeleteRecipe(recipe); break;
+            }
+        });
         builder.show();
     }
 
     private void viewRecipeDetails(Recipe recipe) {
-        Intent intent = new Intent(ManageRecipesActivity.this, RecipeDetailsActivity.class);
+        Intent intent = new Intent(this, RecipeDetailsActivity.class);
         intent.putExtra("RECIPE_ID", recipe.getId());
         startActivity(intent);
     }
 
     private void editRecipe(Recipe recipe) {
-        Intent intent = new Intent(ManageRecipesActivity.this, AddEditRecipeActivity.class);
+        Intent intent = new Intent(this, AddEditRecipeActivity.class);
         intent.putExtra("RECIPE_ID", recipe.getId());
-        startActivity(intent);
+        startActivityForResult(intent, REQUEST_ADD_RECIPE); // Optional: handle edits similarly
     }
 
     private void manageIngredients(Recipe recipe) {
-        Intent intent = new Intent(ManageRecipesActivity.this, ManageIngredientsActivity.class);
+        Intent intent = new Intent(this, ManageIngredientsActivity.class);
         intent.putExtra("RECIPE_ID", recipe.getId());
         intent.putExtra("RECIPE_NAME", recipe.getName());
         startActivity(intent);

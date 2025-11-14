@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Orders Card -->
+            <!-- Manage Recipes Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Order Management"
+                        android:text="Manage Recipes"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -70,21 +70,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="View and manage incoming orders"
+                        android:text="View, add, edit or delete recipes"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginBottom="16dp" />
 
                     <Button
-                        android:id="@+id/view_orders_button"
+                        android:id="@+id/manage_recipes_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/view_orders_button"
+                        android:text="Manage Recipes"
                         android:backgroundTint="@color/primary" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
-            <!-- Menu Card -->
+            <!-- Manage Ingredients Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Menu Management"
+                        android:text="Manage Ingredients"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="@color/text_primary"
@@ -110,16 +110,16 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Update menu items and availability"
+                        android:text="Add, edit or remove ingredients for recipes"
                         android:textSize="14sp"
                         android:textColor="@color/text_secondary"
                         android:layout_marginBottom="16dp" />
 
                     <Button
-                        android:id="@+id/manage_menu_button"
+                        android:id="@+id/manage_ingredients_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/manage_menu_button"
+                        android:text="Manage Ingredients"
                         android:backgroundTint="@color/accent" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
